@@ -1,0 +1,20 @@
+// Keyless verification of the mainnet smoke registration.
+import { createPublicClient, http } from "viem";
+import { base, HAWK_ADDRESSES, hawkTokenId, hawkNode, hawkBaseRegistrarAbi } from "../dist/index.js";
+const A = HAWK_ADDRESSES[8453];
+const OWNER = "0x18A3675e49ec7F2782aC0A2515451d60A7645301";
+const pub = createPublicClient({ chain: base, transport: http() });
+const fwd = await pub.getEnsAddress({ name: "goldfinch.hawk" });
+const rev = await pub.getEnsName({ address: OWNER });
+const txt = await pub.getEnsText({ name: "goldfinch.hawk", key: "url" });
+const holder = await pub.readContract({ address: A.baseRegistrar, abi: hawkBaseRegistrarAbi, functionName: "ownerOf", args: [hawkTokenId("goldfinch")] });
+const uri = await pub.readContract({ address: A.baseRegistrar, abi: hawkBaseRegistrarAbi, functionName: "tokenURI", args: [hawkTokenId("goldfinch")] });
+const subOwner = await pub.readContract({ address: A.registry, abi: [{name:"owner",type:"function",stateMutability:"view",inputs:[{type:"bytes32"}],outputs:[{type:"address"}]}], functionName: "owner", args: [hawkNode("bot1.goldfinch")] });
+console.log("forward:", fwd);
+console.log("reverse:", rev);
+console.log("text url:", txt);
+console.log("721 held by wrapper:", holder === A.wrapper);
+console.log("subname registry owner is wrapper:", subOwner === A.wrapper);
+console.log("tokenURI head:", uri.slice(0, 40));
+const ok = fwd === OWNER && rev === "goldfinch.hawk" && txt === "https://dothawk.xyz" && holder === A.wrapper;
+console.log(ok ? "MAINNET_SMOKE_PASS" : "CHECK_DETAILS");

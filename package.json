@@ -1,0 +1,9 @@
+{
+  "name": "robin-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "indexer"
+  ]
+}

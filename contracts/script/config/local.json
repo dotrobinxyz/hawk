@@ -1,0 +1,16 @@
+{
+  "usdc": "0x0000000000000000000000000000000000000000",
+  "ethUsdFeed": "0x0000000000000000000000000000000000000000",
+  "mockEthPriceUSD8": 200000000000,
+  "gracePeriod": 7776000,
+  "maxFeedAge": 129600,
+  "minCommitmentAge": 60,
+  "maxCommitmentAge": 86400,
+  "premiumStartAttoUSD": 1000000000000000000000,
+  "premiumDays": 21,
+  "promoDurationSeconds": 1209600,
+  "batchGatewayUrl": "https://ccip-v2.ens.xyz",
+  "finalOwner": "0x0000000000000000000000000000000000000000",
+  "isMainnet": false,
+  "minRegistrationDuration": 2419200
+}

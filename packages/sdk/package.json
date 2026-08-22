@@ -1,0 +1,49 @@
+{
+  "name": "hawk-names",
+  "version": "0.2.0",
+  "description": "Resolve and register .hawk names on Base — ENS-standard resolution with a one-line viem config.",
+  "license": "MIT",
+  "author": "dothawkxyz",
+  "homepage": "https://docs.dothawk.xyz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dothawkxyz/hawk.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/dothawkxyz/hawk/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "sync-artifacts": "node scripts/sync-artifacts.mjs",
+    "test": "node --test test/resolution.test.mjs"
+  },
+  "peerDependencies": {
+    "viem": ">=2.30.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "viem": "^2.33.3"
+  },
+  "keywords": [
+    "hawk",
+    "base-chain",
+    "ens",
+    "naming",
+    "viem"
+  ]
+}

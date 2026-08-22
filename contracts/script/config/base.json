@@ -1,0 +1,17 @@
+{
+  "_comment": "Base mainnet (chainId 8453). finalOwner MUST be set to the owner multisig before deploy — the script refuses to run with it unset. USDC address is Circle's canonical USDC on Base (on-chain decimals()==6); ETH/USD feed is the Chainlink aggregator on Base (8 decimals). Promo: 50% off 5+ char base prices for 7 days from deploy.",
+  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "ethUsdFeed": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+  "mockEthPriceUSD8": 0,
+  "gracePeriod": 7776000,
+  "maxFeedAge": 129600,
+  "minCommitmentAge": 60,
+  "maxCommitmentAge": 86400,
+  "premiumStartAttoUSD": 1000000000000000000000,
+  "premiumDays": 21,
+  "promoDurationSeconds": 604800,
+  "batchGatewayUrl": "https://ccip-v2.ens.xyz",
+  "finalOwner": "0x0000000000000000000000000000000000000000",
+  "isMainnet": true,
+  "minRegistrationDuration": 2419200
+}
