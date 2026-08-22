@@ -8,9 +8,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const deploymentsDir = join(here, "../../../contracts/deployments");
 
 const networks = {
-  local: "robin-local.json",
-  "robinhood-testnet": "robin-robinhood-testnet.json",
-  robinhood: "robin-robinhood.json",
+  local: "hawk-local.json",
+  "base-sepolia": "hawk-base-sepolia.json",
+  base: "hawk-base.json",
 };
 
 const out = {};
