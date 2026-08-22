@@ -839,6 +839,70 @@ code {
   font-size: 1.9rem;
   margin: 44px 0 20px;
 }
+.section-lede {
+  color: var(--grey);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  max-width: 60ch;
+  margin: -8px 0 20px;
+}
+
+/* agent delegation tree — the signature of the agent-identity product */
+.agent-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 26px 24px;
+  border-radius: var(--r-card);
+}
+.agent-branch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-left: 26px;
+  position: relative;
+}
+.agent-branch::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: -14px;
+  bottom: 50%;
+  width: 12px;
+  border-left: 2px solid var(--sky);
+  border-bottom: 2px solid var(--sky);
+  border-radius: 0 0 0 8px;
+}
+.agent-points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 22px;
+}
+.agent-points h4 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 0 0 6px;
+}
+.agent-points p {
+  color: var(--grey);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+.agent-points code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--green);
+}
+@media (max-width: 640px) {
+  .agent-points {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
 
 /* stat row */
 .stats {

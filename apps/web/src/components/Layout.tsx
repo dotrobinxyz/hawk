@@ -125,7 +125,7 @@ export function Layout({ children }: { children: ReactNode }) {
           <span className="wordmark">hawk</span>
         </div>
         <p>
-          Open-source naming on Base. ENS-standard resolution,
+          Agent identity on Base. ENS-standard resolution,
           on-chain SVG art, locked metadata.
         </p>
         <div className="contracts">

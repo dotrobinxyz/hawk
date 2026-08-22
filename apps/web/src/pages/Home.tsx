@@ -46,8 +46,12 @@ export function Home() {
   return (
     <>
       <section className="hero">
-        <h1>Name your wallet.</h1>
-        <p>Names on Base. Yours, your bots&rsquo;, your community&rsquo;s.</p>
+        <h1>Name your agents.</h1>
+        <p>
+          Identity for the agent economy on Base. Every wallet, bot, and fleet
+          gets a name that resolves anywhere, proves who it answers to, and
+          carries its own capability card.
+        </p>
         <form className="search" onSubmit={submit}>
           <input
             placeholder="find your .hawk"
@@ -95,6 +99,46 @@ export function Home() {
         </div>
       )}
 
+      <h2 className="section-title">One name per operator. One per agent.</h2>
+      <p className="section-lede">
+        Agents transact, hold funds, and talk to each other — they need
+        addressable, verifiable identity. Under your name, each agent gets a
+        subname that cryptographically proves it&rsquo;s yours.
+      </p>
+      <div className="agent-tree card--night">
+        <BandChip name="acme" variant="green-outline" size="md" />
+        <div className="agent-branch">
+          <BandChip name="bot1.acme" variant="green-outline" size="sm" />
+          <BandChip name="trader.acme" variant="green-outline" size="sm" />
+          <BandChip name="ops.acme" variant="green-outline" size="sm" />
+        </div>
+      </div>
+      <div className="agent-points">
+        <div>
+          <h4>Verifiable delegation</h4>
+          <p>
+            <code>bot1.acme.hawk</code> hangs off <code>acme.hawk</code> —
+            counterparties walk the chain to the operator. An agent is yours or
+            it doesn&rsquo;t resolve.
+          </p>
+        </div>
+        <div>
+          <h4>Capability cards</h4>
+          <p>
+            Text records are the agent&rsquo;s machine-readable profile —
+            endpoint, <code>agent.capabilities</code>, model, operator — readable
+            by any counterparty in one call.
+          </p>
+        </div>
+        <div>
+          <h4>Revocable &amp; tradeable</h4>
+          <p>
+            Subnames are ERC-1155 tokens. Replace a compromised agent, emancipate
+            one to stand on its own, or sell a bot with its whole identity intact.
+          </p>
+        </div>
+      </div>
+
       <h2 className="section-title" id="pricing">
         Pricing
       </h2>
@@ -135,35 +179,39 @@ export function Home() {
       <h2 className="section-title">Who it&rsquo;s for</h2>
       <div>
         <div className="audience">
-          <h3>For traders</h3>
+          <h3>For operators</h3>
           <div>
             <p>
-              Set a primary name once. Every app on Base shows you
-              as your name, not your address.
+              Register your name, issue a subname per agent, point each at its
+              smart account, and revoke or sell any of them. Run a fleet of ten
+              or ten thousand under one identity.
             </p>
-            <BandChip name="maria" size="sm" />
+            <div className="row wrap" style={{ gap: 8 }}>
+              <BandChip name="bot1.acme" size="sm" />
+              <BandChip name="rebalancer.acme" size="sm" />
+            </div>
           </div>
         </div>
         <div className="audience">
           <h3>For builders</h3>
           <div>
-            <p>Resolution in one config line.</p>
+            <p>
+              Stock viem/wagmi/ethers resolve <code>.hawk</code> unchanged —
+              verify a counterparty agent in one call.
+            </p>
             <code className="codeblock">
               const name = await client.getEnsName(&#123; address &#125;)
             </code>
           </div>
         </div>
         <div className="audience">
-          <h3>For communities &amp; agents</h3>
+          <h3>For everyone</h3>
           <div>
             <p>
-              Issue subdomains under your name. Every member, every bot, gets a
-              band.
+              Not just agents — your wallet gets a name too. Set it once and
+              every app on Base shows you as your name, not your address.
             </p>
-            <div className="row wrap" style={{ gap: 8 }}>
-              <BandChip name="alice.dao" size="sm" />
-              <BandChip name="bot-04.dao" size="sm" />
-            </div>
+            <BandChip name="maria" size="sm" />
           </div>
         </div>
       </div>
