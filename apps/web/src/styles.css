@@ -1,18 +1,19 @@
 /* Hawk — names on Base.
    Design system per the approved mocks (Hawk Brand Sheet / Landing / Name
    Profile) and the Brand Sheet's inline token + band-chip + voice rules.
-   One loud color (hawk green); everything else quiet. */
+   One loud color (hawk blue); everything else quiet. */
 
 :root {
   /* Tokens (Brand Sheet §5) */
-  --green: #ccff00; /* hawk green — the one loud color */
-  --charcoal: #2a2622; /* charcoal brown — primary text/ink */
-  --buff: #f1eadf; /* buff — light ground */
-  --grey: #8c8578; /* feather grey — muted text */
-  --blue: #9fb0ba; /* flank blue — reserved / info */
-  --night: #1a1714; /* night — dark ground */
+  --green: #0016e8; /* hawk blue — the one loud color */
+  --sky: #96a5ff; /* light blue — loud-color TEXT on night grounds */
+  --charcoal: #10142b; /* navy ink */
+  --buff: #f4f5fb; /* cool paper — light ground */
+  --grey: #787e99; /* muted */
+  --blue: #e25615; /* copper — reserved / info accents */
+  --night: #070c33; /* deep navy — dark ground */
 
-  --hairline: rgba(140, 133, 120, 0.4);
+  --hairline: rgba(120, 126, 153, 0.4);
 
   --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   --ui: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
@@ -158,7 +159,7 @@ a:hover {
   color: var(--buff);
 }
 .footer .links a:hover {
-  color: var(--green);
+  color: var(--sky);
 }
 .premium-price {
   margin-left: auto;
@@ -172,7 +173,7 @@ a:hover {
   display: inline-block;
   align-self: flex-start;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
   border-radius: var(--r-pill);
   padding: 7px 16px;
   font-family: var(--mono);
@@ -182,7 +183,7 @@ a:hover {
 .promo-tag {
   display: inline-block;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
   border-radius: var(--r-pill);
   padding: 3px 12px;
   font-family: var(--mono);
@@ -216,8 +217,8 @@ a:hover {
   transition: border-color 0.15s, color 0.15s;
 }
 .footer .social-band:hover {
-  border-color: var(--green);
-  color: var(--green);
+  border-color: var(--sky);
+  color: var(--sky);
 }
 .footer .social-band svg {
   width: 17px;
@@ -259,23 +260,23 @@ main {
   color: var(--buff);
 }
 .band.night .tld {
-  color: var(--green);
+  color: var(--sky);
 }
 
 /* on a night ground → green outline, buff label, green tld */
 .band.green-outline {
-  border-color: var(--green);
+  border-color: var(--sky);
   color: var(--buff);
 }
 .band.green-outline .tld {
-  color: var(--green);
+  color: var(--sky);
 }
 
-/* green fill → charcoal ink, never green text */
+/* blue fill → white ink, never blue-on-navy text */
 .band.green {
   border-color: transparent;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
 }
 .band.green .tld {
   color: var(--charcoal);
@@ -312,14 +313,14 @@ main {
   padding: 12px 24px;
   min-height: 46px;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
   transition:
     background 0.12s,
     color 0.12s;
 }
 .btn:hover:not(:disabled) {
   background: var(--charcoal);
-  color: var(--green);
+  color: var(--sky);
 }
 .btn:disabled {
   opacity: 0.45;
@@ -412,7 +413,7 @@ main {
 }
 .seg button.on {
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
 }
 
 .stepper {
@@ -472,8 +473,8 @@ input[type="checkbox"] {
 }
 .card--green {
   background: var(--green);
-  color: var(--charcoal);
-  border-color: var(--charcoal);
+  color: #ffffff;
+  border-color: #ffffff;
 }
 
 h1,
@@ -512,7 +513,7 @@ h3 {
 .tag.available {
   border-color: transparent;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
   font-weight: 500;
 }
 .tag.reserved {
@@ -539,7 +540,7 @@ h3 {
 }
 .card--night .tag.available {
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
 }
 .card--night .tag.reserved {
   border-color: var(--blue);
@@ -787,7 +788,7 @@ code {
   color: var(--buff);
 }
 .price-card.night .tier {
-  color: var(--green);
+  color: var(--sky);
 }
 .price-card.green {
   background: var(--green);
@@ -941,7 +942,7 @@ code {
   max-width: 340px;
 }
 .contract-line:hover {
-  color: var(--green);
+  color: var(--sky);
 }
 .contract-line .muted {
   color: var(--grey);
@@ -998,7 +999,7 @@ code {
   border-radius: 14px;
   padding: 14px 16px;
   background: var(--green);
-  color: var(--charcoal);
+  color: #ffffff;
   font-family: var(--mono);
   font-size: 0.95rem;
   display: flex;

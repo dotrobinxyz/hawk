@@ -100,7 +100,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="shell">
       <header className="topbar">
         <Link href="/" className="brand" aria-label="Hawk home">
-          <img src="/hawk-mark-light.svg" alt="" width={34} height={34} />
+          <img src="/hawk-mark.png" alt="" width={34} height={34} />
           <span className="wordmark">hawk</span>
           {NETWORK !== "base" && (
             <span className="tag reserved">
@@ -121,7 +121,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <footer className="footer">
         <div className="footer-brand">
-          <img src="/hawk-mark-night.svg" alt="" width={28} height={28} />
+          <img src="/hawk-mark.png" alt="" width={28} height={28} />
           <span className="wordmark">hawk</span>
         </div>
         <p>

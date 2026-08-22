@@ -104,14 +104,14 @@ export function Home() {
           <div className="amt">
             $100<span className="per">/yr</span>
           </div>
-          <p>The rare tier. Night card, full neon.</p>
+          <p>The rare tier. Deep navy, full weight.</p>
         </div>
         <div className="price-card green">
           <div className="tier">4 characters</div>
           <div className="amt">
             $25<span className="per">/yr</span>
           </div>
-          <p>Short and loud. Hawk Green card.</p>
+          <p>Short and loud. Electric blue.</p>
         </div>
         <div className="price-card">
           <div className="tier">5+ characters</div>
@@ -128,7 +128,7 @@ export function Home() {
               $5<span className="per">/yr</span>
             </div>
           )}
-          <p>Everyday names. Buff card.</p>
+          <p>Everyday names. Clean paper.</p>
         </div>
       </div>
 
