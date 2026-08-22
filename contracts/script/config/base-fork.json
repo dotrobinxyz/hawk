@@ -1,0 +1,17 @@
+{
+  "_comment": "FORK REHEARSAL ONLY \u2014 base.json values with a stand-in finalOwner. Never broadcast with this file.",
+  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "ethUsdFeed": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
+  "mockEthPriceUSD8": 0,
+  "gracePeriod": 7776000,
+  "maxFeedAge": 129600,
+  "minCommitmentAge": 60,
+  "maxCommitmentAge": 86400,
+  "premiumStartAttoUSD": 1000000000000000000000,
+  "premiumDays": 21,
+  "promoDurationSeconds": 604800,
+  "batchGatewayUrl": "https://ccip-v2.ens.xyz",
+  "finalOwner": "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720",
+  "isMainnet": true,
+  "minRegistrationDuration": 2419200
+}
