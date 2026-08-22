@@ -26,7 +26,7 @@ const A = HAWK_ADDRESSES[8453];
 const account = privateKeyToAccount(process.env.HAWK_MAINNET_DEPLOYER_PK);
 const wallet = createWalletClient({ account, chain: base, transport: http() });
 const pub = createPublicClient({ chain: base, transport: http() });
-const LABEL = "goldfinch";
+const LABEL = "genesis";
 const node = hawkNode(LABEL);
 
 const wait = (h) => pub.waitForTransactionReceipt({ hash: h, timeout: 120_000 });

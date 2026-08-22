@@ -16,8 +16,8 @@ import {
 } from "../dist/index.js";
 
 const A = HAWK_ADDRESSES[8453];
-const OWNER = "0x18A3675e49ec7F2782aC0A2515451d60A7645301"; // deployer (public)
-const LABEL = "goldfinch";
+const OWNER = "0x882220CF716aEF2421b6ab283E63427D81497d8c"; // deployer (public)
+const LABEL = "genesis";
 const node = hawkNode(LABEL);
 const pub = createPublicClient({ chain: base, transport: http() });
 

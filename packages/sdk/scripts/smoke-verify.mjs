@@ -2,7 +2,7 @@
 import { createPublicClient, http } from "viem";
 import { base, HAWK_ADDRESSES, hawkTokenId, hawkNode, hawkBaseRegistrarAbi } from "../dist/index.js";
 const A = HAWK_ADDRESSES[8453];
-const OWNER = "0x18A3675e49ec7F2782aC0A2515451d60A7645301";
+const OWNER = "0x882220CF716aEF2421b6ab283E63427D81497d8c";
 const pub = createPublicClient({ chain: base, transport: http() });
 const fwd = await pub.getEnsAddress({ name: "goldfinch.hawk" });
 const rev = await pub.getEnsName({ address: OWNER });

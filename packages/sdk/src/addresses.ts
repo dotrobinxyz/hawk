@@ -29,17 +29,17 @@ const ZERO = "0x0000000000000000000000000000000000000000" as const;
  */
 export const HAWK_ADDRESSES: Record<number, HawkAddresses> = {
   8453: {
-    registry: ZERO,
-    baseRegistrar: ZERO,
-    controller: ZERO,
-    priceOracle: ZERO,
-    wrapper: ZERO,
-    metadata: ZERO,
-    reservedList: ZERO,
-    publicResolver: ZERO,
-    reverseRegistrar: ZERO,
-    defaultReverseRegistrar: ZERO,
-    universalResolver: ZERO,
+    registry: "0x5DAF4DF48b022Bf0Fb454DBe9CB2592d3A32b0b2",
+    baseRegistrar: "0x83dcABD50E531325C76b9CB07F4C04Aca187722E",
+    controller: "0x65Acb254B2EF5af1FDFf7B8C77427Ca051Ff4F71",
+    priceOracle: "0x697b2C75652b6895D507b9C8E2Cb3b3C8EfccA29",
+    wrapper: "0x0B922e8B56c778667AbDbBBa522880F98362c6C8",
+    metadata: "0xA972f32580C2DD8eEf379e27B4B91b205BF3437F",
+    reservedList: "0x351c51AA3079e7f7EbeFb5079A92279b22a0AB6c",
+    publicResolver: "0xC7cAB8Af20fF52346F4e93c143Cc8e9d6384e26b",
+    reverseRegistrar: "0x4221F2953294ec98Ddf54964DB293E281db71daB",
+    defaultReverseRegistrar: "0x34acC481E26Ee9566d868F455BecD05353Bae257",
+    universalResolver: "0x1Ebbe68AfA011ADBE561De6215B1AA1Fe0e4bc6C",
     usdc: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   },
   84532: {
