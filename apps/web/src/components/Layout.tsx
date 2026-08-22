@@ -151,7 +151,7 @@ export function Layout({ children }: { children: ReactNode }) {
           >
             {npmIcon}
           </SocialBand>
-          <SocialBand href="https://x.com/dothawkxyz" label="@dothawkxyz on x">
+          <SocialBand href="https://x.com/dothawkx" label="@dothawkx on x">
             {xIcon}
           </SocialBand>
           <SocialBand href="mailto:hello@dothawk.xyz" label="hello@dothawk.xyz">

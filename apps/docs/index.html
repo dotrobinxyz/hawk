@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>hawk docs — integrate .hawk names</title>
-<meta name="description" content="Integrate .hawk names on Base. ENS-standard resolution — one config line for viem, wagmi, and ethers. Agent identity, indexed data, contract addresses." />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<title>hawk docs — agent identity on Base</title>
+<meta name="description" content="Name your agents on Base. The .hawk pattern: operator names, per-agent subnames, capability records, one-line ENS-standard resolution for viem, wagmi, and ethers." />
+<link rel="icon" type="image/png" href="favicon.png" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="hawk docs — integrate .hawk names" />
-<meta property="og:description" content="ENS-standard resolution on Base. One config line." />
+<meta property="og:title" content="hawk docs — agent identity on Base" />
+<meta property="og:description" content="Name your agents. Verifiable delegation, capability cards, ENS-standard resolution on Base." />
 <meta property="og:url" content="https://docs.dothawk.xyz" />
 <meta property="og:image" content="https://docs.dothawk.xyz/og-default.png" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -17,13 +17,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
 :root {
-  --green: #ccff00;
-  --charcoal: #2a2622;
-  --buff: #f1eadf;
-  --grey: #8c8578;
-  --blue: #9fb0ba;
-  --night: #1a1714;
-  --hairline: rgba(140, 133, 120, 0.4);
+  --blue: #0016e8;
+  --sky: #96a5ff;
+  --copper: #e25615;
+  --ink: #10142b;
+  --paper: #f4f5fb;
+  --grey: #787e99;
+  --navy: #070c33;
+  --hairline: rgba(120, 126, 153, 0.4);
   --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
   --ui: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
@@ -34,18 +35,17 @@
 html { scroll-behavior: smooth; scroll-padding-top: 76px; }
 html, body {
   margin: 0; padding: 0;
-  background: var(--buff); color: var(--charcoal);
+  background: var(--paper); color: var(--ink);
   font-family: var(--ui); font-size: 16px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--charcoal); }
-a:hover { color: var(--grey); }
+a { color: var(--ink); }
+a:hover { color: var(--blue); }
 .shell { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 20px 64px; }
 
-/* top bar */
 .topbar {
   position: sticky; top: 0; z-index: 10;
-  background: color-mix(in srgb, var(--buff) 88%, transparent);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--hairline);
 }
@@ -54,16 +54,16 @@ a:hover { color: var(--grey); }
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
 }
 .brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.brand img { border-radius: 7px; display: block; }
 .wordmark { font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: -0.02em; }
 .docs-tag {
-  font-family: var(--mono); font-size: 12px; color: var(--charcoal);
-  background: var(--green); border-radius: var(--r-pill); padding: 2px 10px;
+  font-family: var(--mono); font-size: 12px; color: #fff;
+  background: var(--blue); border-radius: var(--r-pill); padding: 2px 10px;
 }
 .topnav { display: flex; gap: 14px; margin-left: auto; flex-wrap: wrap; }
 .topnav a { text-decoration: none; font-size: 14px; color: var(--grey); }
-.topnav a:hover { color: var(--charcoal); }
+.topnav a:hover { color: var(--blue); }
 
-/* type */
 h1 {
   font-family: var(--display); font-weight: 700; letter-spacing: -0.02em;
   font-size: clamp(34px, 7vw, 52px); line-height: 1.05; margin: 48px 0 14px;
@@ -75,44 +75,41 @@ h2 {
 }
 h3 { font-family: var(--display); font-weight: 500; font-size: 19px; margin: 26px 0 6px; }
 p { margin: 10px 0; }
-.lede { font-size: 18px; color: var(--charcoal); max-width: 56ch; }
+.lede { font-size: 18px; max-width: 58ch; }
 .muted { color: var(--grey); }
 .small { font-size: 14px; }
 strong { font-weight: 600; }
 
-/* band chip — the signature. label+suffix contiguous. */
 .band {
   display: inline-flex; align-items: baseline; white-space: nowrap;
   font-family: var(--mono); font-weight: 500;
   border-radius: var(--r-pill); padding: 4px 14px;
-  border: 1.5px solid var(--charcoal); background: transparent;
+  border: 1.5px solid var(--ink); background: transparent;
 }
 .band .sfx { opacity: 0.55; }
-.band.night { background: var(--night); border-color: var(--night); color: var(--buff); }
-.band.night .sfx { color: var(--green); opacity: 1; }
+.band.navy { background: var(--navy); border-color: var(--navy); color: var(--paper); }
+.band.navy .sfx { color: var(--sky); opacity: 1; }
 
-/* code */
 pre {
-  background: var(--night); color: var(--buff);
+  background: var(--navy); color: var(--paper);
   font-family: var(--mono); font-size: 13.5px; line-height: 1.55;
   border-radius: var(--r-card); padding: 18px 20px;
   overflow-x: auto; margin: 14px 0;
 }
-pre .c { color: var(--grey); }        /* comment */
-pre .g { color: var(--green); }       /* the load-bearing line */
-pre .b { color: var(--blue); }        /* strings / values */
+pre .c { color: var(--grey); }
+pre .g { color: var(--sky); }
+pre .b { color: #b9c3ff; }
 code {
   font-family: var(--mono); font-size: 0.92em;
-  background: rgba(140, 133, 120, 0.16); border-radius: 6px; padding: 1px 6px;
+  background: rgba(120, 126, 153, 0.16); border-radius: 6px; padding: 1px 6px;
 }
 pre code { background: none; padding: 0; font-size: inherit; }
 
-/* cards, tables, lists */
 .card {
   border: 1px solid var(--hairline); border-radius: var(--r-card);
-  padding: 16px 20px; margin: 14px 0; background: rgba(255, 255, 255, 0.35);
+  padding: 16px 20px; margin: 14px 0; background: #fff;
 }
-.tablewrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--r-card); margin: 14px 0; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--r-card); margin: 14px 0; background: #fff; }
 table { border-collapse: collapse; width: 100%; font-size: 14px; }
 th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--hairline); }
 tr:last-child td { border-bottom: none; }
@@ -122,24 +119,22 @@ ol, ul { padding-left: 22px; }
 li { margin: 6px 0; }
 li::marker { color: var(--grey); }
 
-/* footer — mirrors the app */
-footer {
-  background: var(--night); color: var(--buff); margin-top: 72px;
-}
+footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
 .footer-inner { max-width: 760px; margin: 0 auto; padding: 34px 20px 44px; }
-.footer-inner a { color: var(--buff); text-decoration: none; }
-.footer-inner a:hover { color: var(--green); }
+.footer-inner a { color: var(--paper); text-decoration: none; }
+.footer-inner a:hover { color: var(--sky); }
 .footer-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
-.footer-brand .wordmark { color: var(--buff); }
+.footer-brand img { border-radius: 6px; }
+.footer-brand .wordmark { color: var(--paper); }
 .footer-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; margin-top: 14px; font-family: var(--mono); }
 .socials { display: flex; gap: 10px; margin-top: 14px; }
 .social-band {
   width: 36px; height: 36px; border-radius: var(--r-pill);
-  border: 1.5px solid rgba(241, 234, 223, 0.35);
+  border: 1.5px solid rgba(244, 245, 251, 0.35);
   display: flex; align-items: center; justify-content: center;
-  color: var(--buff); transition: border-color 0.15s, color 0.15s;
+  color: var(--paper); transition: border-color 0.15s, color 0.15s;
 }
-.social-band:hover { border-color: var(--green); color: var(--green) !important; }
+.social-band:hover { border-color: var(--sky); color: var(--sky) !important; }
 .social-band svg { width: 17px; height: 17px; display: block; }
 @media (max-width: 560px) { .topnav { gap: 10px; } h2 { font-size: 23px; } }
 </style>
@@ -149,14 +144,14 @@ footer {
 <div class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="https://dothawk.xyz">
-      <img src="hawk-mark-light.svg" alt="" width="26" height="26" />
+      <img src="hawk-mark.png" alt="" width="26" height="26" />
       <span class="wordmark">hawk</span>
     </a>
     <span class="docs-tag">docs</span>
     <nav class="topnav">
+      <a href="#agents">agents</a>
       <a href="#integrate">integrate</a>
       <a href="#indexed">indexed data</a>
-      <a href="#agents">agents</a>
       <a href="#addresses">addresses</a>
     </nav>
   </div>
@@ -164,123 +159,25 @@ footer {
 
 <div class="shell">
 
-<h1>Integrate .hawk names.</h1>
+<h1>Name your agents.</h1>
 <p class="lede">
-  Hawk is the ENS-standard naming layer for Base. It implements the
-  exact ENS interfaces — ERC-137 registry, standard resolver profiles, ENSIP
-  namehash, reverse records, a UniversalResolver — so
+  Hawk is identity for the agent economy on Base — ENS-standard
+  <code>.hawk</code> names for operators, agents, and wallets. It implements
+  the exact ENS interfaces (ERC-137 registry, standard resolver profiles,
+  ENSIP namehash, reverse records, a UniversalResolver), so
   <strong>the ENS tooling you already use works unchanged</strong>.
-  Integration is a config line, not an SDK adoption project.
 </p>
 <p>
-  The highest-leverage integration is <strong>reverse resolution</strong>:
-  wherever your UI renders <code>0x71C7…9F2b</code>, render
-  <span class="band night">trader<span class="sfx">.hawk</span></span> instead.
+  An agent that claims to be yours either resolves under your name — or it
+  doesn&rsquo;t: <span class="band navy">bot1.acme<span class="sfx">.hawk</span></span>
+  cryptographically hangs off <span class="band navy">acme<span class="sfx">.hawk</span></span>.
 </p>
 
-<h2 id="integrate">viem / wagmi — one line.</h2>
-<pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;
-<span class="g">import { base } from "hawk-names"; // ← the one line</span>
-
-<span class="c">const</span> client = createPublicClient({ chain: base, transport: http() });
-
-<span class="c">// reverse: address → name (do this in your UI)</span>
-<span class="c">await</span> client.getEnsName({ address: <span class="b">"0x71C7656EC7ab88b098defB751B7401B5f6d8976F"</span> });
-<span class="c">// → "trader.hawk"</span>
-
-<span class="c">// forward: name → address (payments, transfers, search)</span>
-<span class="c">await</span> client.getEnsAddress({ name: <span class="b">"trader.hawk"</span> });
-
-<span class="c">// profile records</span>
-<span class="c">await</span> client.getEnsText({ name: <span class="b">"trader.hawk"</span>, key: <span class="b">"com.twitter"</span> });
-<span class="c">await</span> client.getEnsAvatar({ name: <span class="b">"trader.hawk"</span> });</code></pre>
-<p>
-  With wagmi, pass the chain into your config and use the stock hooks —
-  <code>useEnsName</code>, <code>useEnsAddress</code>, <code>useEnsText</code>,
-  <code>useEnsAvatar</code>. Nothing else changes. Already have your own chain
-  object? Wrap it: <code>withHawk(myChainConfig)</code>.
-</p>
-<p class="small muted">
-  Install: <code>npm i hawk-names viem</code> — source at
-  <a href="https://github.com/dothawkxyz/hawk/tree/main/packages/sdk">packages/sdk</a>,
-  package at <a href="https://www.npmjs.com/package/hawk-names">npmjs.com/package/hawk-names</a>.
-</p>
-
-<h3>Without the SDK.</h3>
-<p>
-  The SDK is convenience, not dependency. Point any ENS-aware library at
-  Hawk's registry and UniversalResolver — addresses
-  <a href="#addresses">below</a>, verified on Blockscout:
-</p>
-<pre><code><span class="c">import</span> { defineChain } <span class="c">from</span> <span class="b">"viem"</span>;
-
-<span class="c">const</span> base = defineChain({
-  id: <span class="b">8453</span>,
-  name: <span class="b">"Base"</span>,
-  nativeCurrency: { name: <span class="b">"Ether"</span>, symbol: <span class="b">"ETH"</span>, decimals: <span class="b">18</span> },
-  rpcUrls: { default: { http: [<span class="b">"https://mainnet.base.org"</span>] } },
-  contracts: {
-<span class="g">    ensRegistry: { address: "0x29d8cEae06c4F97c784BD016A41eB45c9A2d6aE1" },</span>
-<span class="g">    ensUniversalResolver: { address: "0x1C336914666256e2c5131FB460C598F2EAB0292B" },</span>
-    multicall3: { address: <span class="b">"0xcA11bde05977b3631167028862bE2a173976CA11"</span> },
-  },
-});</code></pre>
-<p>
-  ethers v6:
-  <code>new JsonRpcProvider(rpc, { chainId: 8453, name: "base", ensAddress: "0x29d8…6aE1" })</code>.
-</p>
-
-<h3>Solidity — resolve on-chain.</h3>
-<pre><code><span class="c">// Forward-resolve in a contract via the registry (ERC-137):</span>
-ENS registry = ENS(<span class="b">0x29d8cEae06c4F97c784BD016A41eB45c9A2d6aE1</span>);
-address resolver = registry.resolver(node);
-address target = Resolver(resolver).addr(node);</code></pre>
-<p>
-  Or call <code>UniversalResolver.resolve(dnsEncodedName, calldata)</code> for
-  one-call resolution including wildcard support.
-</p>
-
-<h3>UX rules — match ENS behaviour so users trust the result.</h3>
-<ol>
-  <li><strong>Always forward-check the reverse.</strong> After
-    <code>getEnsName(address)</code>, confirm <code>getEnsAddress(thatName)</code>
-    returns the same address before displaying it (viem does this for you).</li>
-  <li><strong>Normalize before hashing.</strong> Use ENSIP-15
-    (<code>normalize</code> from <code>hawk-names</code> or
-    <code>viem/ens</code>) on any user-typed name.</li>
-  <li><strong>Names expire.</strong> A resolved name is valid <em>now</em>;
-    don't cache it beyond your normal UI cache windows.</li>
-</ol>
-
-<h2 id="indexed">Indexed data.</h2>
-<p>
-  For lists and search — names by owner, expiries, activity, auctions — the
-  public GraphQL endpoint serves the chain's naming state:
-</p>
-<p><span class="band">api.dothawk.xyz<span class="sfx">/graphql</span></span></p>
-<pre><code>curl -s <span class="b">https://api.dothawk.xyz/graphql</span> \
-  -H <span class="b">"content-type: application/json"</span> \
-  -d <span class="b">'{"query":"{ names(orderBy: \"expiresAt\", orderDirection: \"desc\", limit: 20) { items { label owner expiresAt wrapped } totalCount } }"}'</span></code></pre>
-<p>
-  CORS is open — call it straight from your dapp. Schema:
-  <a href="https://github.com/dothawkxyz/hawk/blob/main/indexer/ponder.schema.ts">indexer/ponder.schema.ts</a>.
-  Self-hosting is one command (<code>ponder start</code>) against any
-  Base RPC.
-</p>
-
-<h2 id="agents">Name your agents.</h2>
-<p>
-  Base is built for agentic trading. Agents transact, hold funds,
-  and talk to each other — they need what every actor on a chain needs:
-  <strong>an addressable, verifiable identity</strong>. One parent name per
-  operator; one subname per agent:
-</p>
-<p><span class="band night">bot1.goldfinch<span class="sfx">.hawk</span></span>
-   <span class="muted small">→ the agent's smart account</span></p>
+<h2 id="agents">The agent pattern.</h2>
 <ol>
   <li>
     <strong>Register and wrap your operator name.</strong>
-    <code>goldfinch.hawk</code> → wrap it (one click in the
+    <code>acme.hawk</code> → wrap it (one click in the
     <a href="https://dothawk.xyz">app</a>, or <code>HawkWrapper.wrapETH2LD</code>).
     Wrapping turns your name into a parent that can issue subname tokens.
   </li>
@@ -288,9 +185,9 @@ address target = Resolver(resolver).addr(node);</code></pre>
     <strong>Issue a subname per agent.</strong> Subnames are real ERC-1155
     tokens — transferable, sellable, revocable like any asset.
 <pre><code>HawkWrapper.setSubnodeOwner(
-  namehash(<span class="b">"goldfinch.hawk"</span>),
+  namehash(<span class="b">"acme.hawk"</span>),
   <span class="b">"bot1"</span>,
-  agentAccount,  <span class="c">// the agent's ERC-4337 smart account</span>
+  agentAccount,  <span class="c">// the agent's smart account</span>
   <span class="b">0</span>,             <span class="c">// fuses — or PARENT_CANNOT_CONTROL to emancipate</span>
   <span class="b">0</span>
 )</code></pre>
@@ -299,22 +196,21 @@ address target = Resolver(resolver).addr(node);</code></pre>
   </li>
   <li>
     <strong>Give the agent a capability card — text records.</strong>
-    Machine-readable profile, readable by any counterparty with one call:
+    The machine-readable profile any counterparty can read in one call:
     <div class="tablewrap"><table>
       <tr><th>key</th><th>value</th></tr>
       <tr><td><code>url</code></td><td>the agent's API / A2A endpoint</td></tr>
       <tr><td><code>description</code></td><td>what this agent does</td></tr>
       <tr><td><code>agent.capabilities</code></td><td>comma-separated verbs: <code>swap,lend,rebalance</code></td></tr>
       <tr><td><code>agent.model</code></td><td>model / runtime identifier</td></tr>
-      <tr><td><code>agent.operator</code></td><td><code>goldfinch.hawk</code> — walk up to the human</td></tr>
+      <tr><td><code>agent.operator</code></td><td><code>acme.hawk</code> — walk up to the human</td></tr>
       <tr><td><code>avatar</code></td><td>image URI</td></tr>
     </table></div>
   </li>
   <li>
     <strong>Set the agent's primary name.</strong> The agent's account calls
-    <code>ReverseRegistrar.setName("bot1.goldfinch.hawk")</code> (or use
-    <code>setNameForAddr</code> while you control it). Every explorer and dapp
-    that renders reverse resolution now shows the agent's name.
+    <code>ReverseRegistrar.setName("bot1.acme.hawk")</code> — every explorer
+    and dapp that renders reverse resolution now shows the agent's name.
   </li>
 </ol>
 
@@ -334,44 +230,103 @@ address target = Resolver(resolver).addr(node);</code></pre>
 }</code></pre>
 <div class="card small">
   <strong>Why this beats a registry contract or an off-chain list.</strong>
-  Verifiable delegation — <code>bot1.goldfinch.hawk</code> cryptographically
-  hangs off <code>goldfinch.hawk</code>, so counterparties can walk the
-  namehash chain to the operator. Revocable — keep the parent's control fuses
-  and you can replace a compromised agent's subname; emancipate it and the
-  identity is provably the agent's own. Composable — every wallet, explorer,
-  and agent framework that speaks ENS resolves it with zero custom code.
-  Tradeable — a wrapped subname (the agent's name, reputation, endpoint) can
-  change operators atomically.
+  Verifiable delegation — counterparties walk the namehash chain to the
+  operator. Revocable — keep the parent's control fuses and you can replace a
+  compromised agent's subname; emancipate it and the identity is provably the
+  agent's own. Composable — every wallet, explorer, and agent framework that
+  speaks ENS resolves it with zero custom code. Tradeable — a wrapped subname
+  (the agent's name, reputation, endpoint) can change operators atomically.
 </div>
+
+<h2 id="integrate">viem / wagmi — one line.</h2>
+<pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;
+<span class="g">import { base } from "hawk-names"; // ← Base with Hawk wired in as its ENS</span>
+
+<span class="c">const</span> client = createPublicClient({ chain: base, transport: http() });
+
+<span class="c">// reverse: address → name (do this in your UI)</span>
+<span class="c">await</span> client.getEnsName({ address: <span class="b">"0x882220CF716aEF2421b6ab283E63427D81497d8c"</span> });
+<span class="c">// → "genesis.hawk"</span>
+
+<span class="c">// forward: name → address</span>
+<span class="c">await</span> client.getEnsAddress({ name: <span class="b">"genesis.hawk"</span> });
+
+<span class="c">// capability records</span>
+<span class="c">await</span> client.getEnsText({ name: <span class="b">"genesis.hawk"</span>, key: <span class="b">"url"</span> });</code></pre>
+<p class="small muted">
+  Install: <code>npm i hawk-names viem</code> — source at
+  <a href="https://github.com/dotrobinxyz/hawk/tree/main/packages/sdk">packages/sdk</a>,
+  package at <a href="https://www.npmjs.com/package/hawk-names">npmjs.com/package/hawk-names</a>.
+  With wagmi, pass the chain into your config and use the stock hooks.
+</p>
+
+<h3>Without the SDK.</h3>
+<pre><code><span class="c">import</span> { defineChain } <span class="c">from</span> <span class="b">"viem"</span>;
+
+<span class="c">const</span> baseWithHawk = defineChain({
+  id: <span class="b">8453</span>,
+  name: <span class="b">"Base"</span>,
+  nativeCurrency: { name: <span class="b">"Ether"</span>, symbol: <span class="b">"ETH"</span>, decimals: <span class="b">18</span> },
+  rpcUrls: { default: { http: [<span class="b">"https://mainnet.base.org"</span>] } },
+  contracts: {
+<span class="g">    ensRegistry: { address: "0x5DAF4DF48b022Bf0Fb454DBe9CB2592d3A32b0b2" },</span>
+<span class="g">    ensUniversalResolver: { address: "0x1Ebbe68AfA011ADBE561De6215B1AA1Fe0e4bc6C" },</span>
+    multicall3: { address: <span class="b">"0xcA11bde05977b3631167028862bE2a173976CA11"</span> },
+  },
+});</code></pre>
+<p>
+  ethers v6:
+  <code>new JsonRpcProvider(rpc, { chainId: 8453, name: "base", ensAddress: "0x5DAF…b0b2" })</code>.
+  Payment: register and renew in <strong>ETH or USDC</strong> (Circle's
+  canonical USDC on Base).
+</p>
+
+<h3>UX rules.</h3>
+<ol>
+  <li><strong>Always forward-check the reverse</strong> before displaying a
+    name (viem does this for you).</li>
+  <li><strong>Normalize before hashing</strong> — ENSIP-15
+    (<code>normalize</code> from <code>hawk-names</code> or <code>viem/ens</code>).</li>
+  <li><strong>Names expire.</strong> A resolved name is valid <em>now</em>;
+    don't cache beyond normal UI windows.</li>
+</ol>
+
+<h2 id="indexed">Indexed data.</h2>
+<p>
+  Names, owners, expiries, subnames, and auctions over GraphQL — CORS open,
+  call it straight from your dapp or agent:
+</p>
+<p><span class="band">api.dothawk.xyz<span class="sfx">/graphql</span></span></p>
+<pre><code>curl -s <span class="b">https://api.dothawk.xyz/graphql</span> \
+  -H <span class="b">"content-type: application/json"</span> \
+  -d <span class="b">'{"query":"{ names(orderBy: \"expiresAt\", orderDirection: \"desc\", limit: 20) { items { label owner expiresAt wrapped } totalCount } }"}'</span></code></pre>
 
 <h2 id="addresses">Addresses.</h2>
 <p>
-  Base mainnet, chainId <code>8453</code> — live, verified on
-  <a href="https://basescan.org">Blockscout</a>. Owned by a
-  2-of-3 Safe: <code>0xD0d82499Bfbbc5D92d31BDc46d31d1Fd3eA50a71</code>.
+  Base mainnet, chainId <code>8453</code> — live, sources on
+  <a href="https://base.blockscout.com">Blockscout</a>. Owned by a 2-of-3 Safe:
+  <code>0xd0eC82124401A30d8337FEF77899e883bb12Df0b</code>.
 </p>
 <div class="tablewrap"><table>
   <tr><th>contract</th><th>address</th></tr>
-  <tr><td>HawkRegistry</td><td><a href="https://basescan.org/address/0x29d8cEae06c4F97c784BD016A41eB45c9A2d6aE1">0x29d8cEae06c4F97c784BD016A41eB45c9A2d6aE1</a></td></tr>
-  <tr><td>UniversalResolver</td><td><a href="https://basescan.org/address/0x1C336914666256e2c5131FB460C598F2EAB0292B">0x1C336914666256e2c5131FB460C598F2EAB0292B</a></td></tr>
-  <tr><td>PublicResolver</td><td><a href="https://basescan.org/address/0x859fe65f2d58182C72E6B7Ca54e32c9a16d5bF04">0x859fe65f2d58182C72E6B7Ca54e32c9a16d5bF04</a></td></tr>
-  <tr><td>ReverseRegistrar</td><td><a href="https://basescan.org/address/0x489ae7566b8E48C9B6F922DAe7a6c9c552B57C47">0x489ae7566b8E48C9B6F922DAe7a6c9c552B57C47</a></td></tr>
-  <tr><td>DefaultReverseRegistrar</td><td><a href="https://basescan.org/address/0x3C0ae4a25307c66Fb5f558DF592cc4B70E42ffaa">0x3C0ae4a25307c66Fb5f558DF592cc4B70E42ffaa</a></td></tr>
-  <tr><td>HawkRegistrarController</td><td><a href="https://basescan.org/address/0x9080E579fa9776EFe4531004aBe78D8f25480f77">0x9080E579fa9776EFe4531004aBe78D8f25480f77</a></td></tr>
-  <tr><td>HawkBaseRegistrar</td><td><a href="https://basescan.org/address/0x218CCD54F64cdcB7d0B6e45eA4665846df01Ad5C">0x218CCD54F64cdcB7d0B6e45eA4665846df01Ad5C</a></td></tr>
-  <tr><td>HawkWrapper</td><td><a href="https://basescan.org/address/0x2Ad2590817Dde5A070849DdFBB38959153D7B282">0x2Ad2590817Dde5A070849DdFBB38959153D7B282</a></td></tr>
-  <tr><td>HawkPriceOracle</td><td><a href="https://basescan.org/address/0x38507fc485d269914A2DCCEF4973f9e572473730">0x38507fc485d269914A2DCCEF4973f9e572473730</a></td></tr>
-  <tr><td>HawkReservedList</td><td><a href="https://basescan.org/address/0xE458B7c0f88A746baeaa9b2a687e6F3d8E1Ba3Eb">0xE458B7c0f88A746baeaa9b2a687e6F3d8E1Ba3Eb</a></td></tr>
-  <tr><td>HawkMetadata</td><td><a href="https://basescan.org/address/0xda05Ecd77E31099Ea24829E135c18928254E17EB">0xda05Ecd77E31099Ea24829E135c18928254E17EB</a></td></tr>
-  <tr><td>GatewayProvider</td><td><a href="https://basescan.org/address/0xf1702Bc3441c87f51c01C035BC2aDA49eBF8a011">0xf1702Bc3441c87f51c01C035BC2aDA49eBF8a011</a></td></tr>
+  <tr><td>HawkRegistry</td><td><a href="https://base.blockscout.com/address/0x5DAF4DF48b022Bf0Fb454DBe9CB2592d3A32b0b2">0x5DAF4DF48b022Bf0Fb454DBe9CB2592d3A32b0b2</a></td></tr>
+  <tr><td>UniversalResolver</td><td><a href="https://base.blockscout.com/address/0x1Ebbe68AfA011ADBE561De6215B1AA1Fe0e4bc6C">0x1Ebbe68AfA011ADBE561De6215B1AA1Fe0e4bc6C</a></td></tr>
+  <tr><td>PublicResolver</td><td><a href="https://base.blockscout.com/address/0xC7cAB8Af20fF52346F4e93c143Cc8e9d6384e26b">0xC7cAB8Af20fF52346F4e93c143Cc8e9d6384e26b</a></td></tr>
+  <tr><td>ReverseRegistrar</td><td><a href="https://base.blockscout.com/address/0x4221F2953294ec98Ddf54964DB293E281db71daB">0x4221F2953294ec98Ddf54964DB293E281db71daB</a></td></tr>
+  <tr><td>DefaultReverseRegistrar</td><td><a href="https://base.blockscout.com/address/0x34acC481E26Ee9566d868F455BecD05353Bae257">0x34acC481E26Ee9566d868F455BecD05353Bae257</a></td></tr>
+  <tr><td>HawkRegistrarController</td><td><a href="https://base.blockscout.com/address/0x65Acb254B2EF5af1FDFf7B8C77427Ca051Ff4F71">0x65Acb254B2EF5af1FDFf7B8C77427Ca051Ff4F71</a></td></tr>
+  <tr><td>HawkBaseRegistrar</td><td><a href="https://base.blockscout.com/address/0x83dcABD50E531325C76b9CB07F4C04Aca187722E">0x83dcABD50E531325C76b9CB07F4C04Aca187722E</a></td></tr>
+  <tr><td>HawkWrapper</td><td><a href="https://base.blockscout.com/address/0x0B922e8B56c778667AbDbBBa522880F98362c6C8">0x0B922e8B56c778667AbDbBBa522880F98362c6C8</a></td></tr>
+  <tr><td>HawkPriceOracle</td><td><a href="https://base.blockscout.com/address/0x697b2C75652b6895D507b9C8E2Cb3b3C8EfccA29">0x697b2C75652b6895D507b9C8E2Cb3b3C8EfccA29</a></td></tr>
+  <tr><td>HawkReservedList</td><td><a href="https://base.blockscout.com/address/0x351c51AA3079e7f7EbeFb5079A92279b22a0AB6c">0x351c51AA3079e7f7EbeFb5079A92279b22a0AB6c</a></td></tr>
+  <tr><td>HawkMetadata</td><td><a href="https://base.blockscout.com/address/0xA972f32580C2DD8eEf379e27B4B91b205BF3437F">0xA972f32580C2DD8eEf379e27B4B91b205BF3437F</a></td></tr>
+  <tr><td>GatewayProvider</td><td><a href="https://base.blockscout.com/address/0x4Bebe0C9073167d9772E89f272100036EC97F2ff">0x4Bebe0C9073167d9772E89f272100036EC97F2ff</a></td></tr>
 </table></div>
 <p class="small muted">
-  Testnet (chainId <code>84532</code>) stays live for development —
-  <code>baseSepolia</code> in the SDK, addresses in
-  <a href="https://github.com/dothawkxyz/hawk/tree/main/contracts/deployments">contracts/deployments/</a>
-  (the deploy script's own record, so published addresses can never drift from
-  what's on chain), free ETH at
-  <a href="https://faucet.testnet.chain.hawkhood.com">faucet.testnet.chain.hawkhood.com</a>.
+  Addresses come from the deploy script's own record
+  (<a href="https://github.com/dotrobinxyz/hawk/blob/main/contracts/deployments/hawk-base.json">contracts/deployments/hawk-base.json</a>),
+  so published addresses can never drift from what's on chain. USDC:
+  <code>0x8335…2913</code> (Circle, canonical on Base).
 </p>
 
 </div>
@@ -379,29 +334,26 @@ address target = Resolver(resolver).addr(node);</code></pre>
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="hawk-mark-night.svg" alt="" width="28" height="28" />
+      <img src="hawk-mark.png" alt="" width="28" height="28" />
       <span class="wordmark">hawk</span>
     </div>
-    <p class="small">Open-source naming on Base. ENS-standard resolution, on-chain SVG art, locked metadata.</p>
+    <p class="small">Agent identity on Base. ENS-standard resolution, on-chain SVG art, locked metadata.</p>
     <div class="footer-links">
       <a href="https://dothawk.xyz">dothawk.xyz</a>
       <a href="https://api.dothawk.xyz">api.dothawk.xyz</a>
     </div>
     <div class="socials">
-      <a class="social-band" href="https://github.com/dothawkxyz/hawk" aria-label="github" title="github">
+      <a class="social-band" href="https://github.com/dotrobinxyz/hawk" aria-label="github" title="github">
         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
       </a>
       <a class="social-band" href="https://www.npmjs.com/package/hawk-names" aria-label="hawk-names on npm" title="hawk-names on npm">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M0 0v24h24V0H0zm19.2 19.2h-2.4V9.6h-4.8v9.6H4.8V4.8h14.4v14.4z"/></svg>
       </a>
-      <a class="social-band" href="https://x.com/dothawkxyz" aria-label="@dothawkxyz on x" title="@dothawkxyz">
+      <a class="social-band" href="https://x.com/dothawkx" aria-label="@dothawkx on x" title="@dothawkx">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
       </a>
       <a class="social-band" href="mailto:hello@dothawk.xyz" aria-label="hello@dothawk.xyz" title="hello@dothawk.xyz">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6.5L20.5 7"/></svg>
-      </a>
-      <a class="social-band" href="mailto:security@dothawk.xyz" aria-label="security@dothawk.xyz" title="security@dothawk.xyz">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 4.5 5.3v5.9c0 4.6 3.2 7.9 7.5 9.3 4.3-1.4 7.5-4.7 7.5-9.3V5.3L12 2.5Z"/></svg>
       </a>
     </div>
   </div>
