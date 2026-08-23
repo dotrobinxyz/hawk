@@ -143,7 +143,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </a>
         </div>
         <div className="socials">
-          <SocialBand href="https://github.com/dothawkxyz/hawk" label="github">
+          <SocialBand href="https://github.com/dotrobinxyz/hawk" label="github">
             {githubIcon}
           </SocialBand>
           <SocialBand

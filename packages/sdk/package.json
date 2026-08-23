@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "description": "Resolve and register .hawk names on Base — ENS-standard resolution with a one-line viem config.",
   "license": "MIT",
-  "author": "dothawkxyz",
+  "author": "dotrobinxyz",
   "homepage": "https://docs.dothawk.xyz",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dothawkxyz/hawk.git",
+    "url": "git+https://github.com/dotrobinxyz/hawk.git",
     "directory": "packages/sdk"
   },
   "bugs": {
-    "url": "https://github.com/dothawkxyz/hawk/issues"
+    "url": "https://github.com/dotrobinxyz/hawk/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
