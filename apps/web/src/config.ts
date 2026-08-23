@@ -76,6 +76,13 @@ export const EXPLORER = CHAIN.blockExplorers?.default.url;
 export const INDEXER_URL =
   import.meta.env.VITE_INDEXER_URL ?? "http://localhost:42069";
 
+/**
+ * Dark-launch flag for the agent directory + verify UI. Absent from the
+ * build env, this folds to a constant false and the whole feature is
+ * tree-shaken out of the bundle.
+ */
+export const AGENTS_ENABLED = import.meta.env.VITE_HAWK_AGENTS === "1";
+
 /** Premium auction length per network (oracle constructor parameter). */
 export const PREMIUM_DAYS = NETWORK === "base-sepolia" ? 2 : 21;
 

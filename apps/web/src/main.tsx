@@ -3,12 +3,13 @@ import ReactDOM from "react-dom/client";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
-import { wagmiConfig } from "./config";
+import { AGENTS_ENABLED, wagmiConfig } from "./config";
 import { Layout } from "./components/Layout";
 import { Home } from "./pages/Home";
 import { NamePage } from "./pages/NamePage";
 import { MyNames } from "./pages/MyNames";
 import { Auctions } from "./pages/Auctions";
+import { AgentsPage } from "./pages/Agents";
 import "./styles.css";
 
 const queryClient = new QueryClient({
@@ -28,6 +29,16 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="/my" component={MyNames} />
             <Route path="/mine" component={MyNames} />
             <Route path="/auctions" component={Auctions} />
+            {AGENTS_ENABLED && (
+              <Route path="/agents/:name">
+                {(params) => (
+                  <AgentsPage initial={decodeURIComponent(params.name)} />
+                )}
+              </Route>
+            )}
+            {AGENTS_ENABLED && (
+              <Route path="/agents">{() => <AgentsPage />}</Route>
+            )}
             <Route>
               <div className="empty">Nothing here.</div>
             </Route>

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useRoute } from "wouter";
 import { ConnectButton } from "./ConnectButton";
-import { ADDRESSES, EXPLORER, NETWORK } from "../config";
+import { ADDRESSES, AGENTS_ENABLED, EXPLORER, NETWORK } from "../config";
 import { shortAddress } from "../lib/format";
 
 function NavLink({ href, label }: { href: string; label: string }) {
@@ -115,6 +115,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <NavLink href="/" label="search" />
         <NavLink href="/my" label="my names" />
         <NavLink href="/auctions" label="auctions" />
+        {AGENTS_ENABLED && <NavLink href="/agents" label="agents" />}
       </nav>
 
       <main>{children}</main>
