@@ -15,8 +15,9 @@ import {
 import { eq } from "ponder";
 import { keccak256, encodePacked, zeroAddress, type Hex } from "viem";
 
+/// namehash("hawk")
 const HAWK_NODE =
-  "0x1a9af74db203c4017d8445942e9b64ce93d8bc2ae2eed5b8dcbbb0090690d2b3" as const;
+  "0xf431efc1fb1b854a38191ac67de7e1ee70205b40f71cb927c938685e82e05403" as const;
 
 const STATS_ID = 1;
 
