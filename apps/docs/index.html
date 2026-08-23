@@ -150,8 +150,9 @@ footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
     <span class="docs-tag">docs</span>
     <nav class="topnav">
       <a href="#agents">agents</a>
+      <a href="#agent-api">agent api</a>
+      <a href="hip-1.html">HIP-1</a>
       <a href="#integrate">integrate</a>
-      <a href="#indexed">indexed data</a>
       <a href="#addresses">addresses</a>
     </nav>
   </div>
@@ -206,6 +207,10 @@ footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
       <tr><td><code>agent.operator</code></td><td><code>acme.hawk</code> — walk up to the human</td></tr>
       <tr><td><code>avatar</code></td><td>image URI</td></tr>
     </table></div>
+    Record keys, requirement levels, and the verification algorithm are
+    formalized in <a href="hip-1.html"><strong>HIP-1: Agent Capability
+    Cards</strong></a>. Setting <code>agent.capabilities</code> also lists
+    the agent in the <a href="https://dothawk.xyz/agents">directory</a>.
   </li>
   <li>
     <strong>Set the agent's primary name.</strong> The agent's account calls
@@ -237,6 +242,45 @@ footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
   speaks ENS resolves it with zero custom code. Tradeable — a wrapped subname
   (the agent's name, reputation, endpoint) can change operators atomically.
 </div>
+
+<h2 id="agent-api">Agent API — verify &amp; directory.</h2>
+<p>
+  The zero-code path: one HTTP call answers <em>is this agent real, which
+  account does it act from, and who does it answer to</em>. Open CORS —
+  call it straight from a dapp, a bot, or curl.
+</p>
+<p><span class="band">api.dothawk.xyz<span class="sfx">/verify/:name</span></span></p>
+<pre><code>curl -s <span class="b">https://api.dothawk.xyz/verify/genesis.hawk</span>
+
+{
+  <span class="b">"name"</span>: <span class="b">"genesis.hawk"</span>,
+  <span class="g">"verified": true,</span>
+  <span class="b">"checks"</span>: { <span class="b">"registered"</span>: true, <span class="b">"rootActive"</span>: true,
+              <span class="b">"addressSet"</span>: true, <span class="b">"primaryMatch"</span>: true },
+  <span class="b">"address"</span>: <span class="b">"0x8822…7d8c"</span>,
+  <span class="b">"operatorChain"</span>: [<span class="c">…parents up to the 2LD, with owners…</span>],
+  <span class="b">"agent"</span>: { <span class="b">"capabilities"</span>: [<span class="b">"registry"</span>,<span class="b">"verify"</span>,<span class="b">"directory"</span>], <span class="c">…</span> }
+}</code></pre>
+<p>
+  <code>verified</code> means: the name exists, its root registration is
+  unexpired, and it resolves to an address. <code>primaryMatch</code> is the
+  strongest signal — the address&rsquo;s own reverse record points back at
+  the name. The exact algorithm is normative in
+  <a href="hip-1.html">HIP-1</a>.
+</p>
+<p><span class="band">api.dothawk.xyz<span class="sfx">/agents</span></span></p>
+<p>
+  The directory feed: every name that published an
+  <code>agent.capabilities</code> record, with its card, address, operator,
+  and expiry state. <code>?operator=acme.hawk</code> returns one
+  operator&rsquo;s whole fleet. Human-browsable at
+  <a href="https://dothawk.xyz/agents">dothawk.xyz/agents</a>.
+</p>
+<p class="small muted">
+  Both endpoints are read-only conveniences over public chain state
+  (~30&nbsp;s cache) — nobody can pay to be &ldquo;verified&rdquo;, and
+  anyone can recompute every answer from Base directly.
+</p>
 
 <h2 id="integrate">viem / wagmi — one line.</h2>
 <pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;

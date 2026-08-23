@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HIP-1: Agent Capability Cards — hawk</title>
+<meta name="description" content="HIP-1 — the open convention for machine-readable agent identity on Base: capability records on .hawk names, and the verification algorithm any counterparty can run." />
+<link rel="icon" type="image/png" href="favicon.png" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="HIP-1: Agent Capability Cards" />
+<meta property="og:description" content="The open convention for machine-readable agent identity on Base — capability records on .hawk names, and the verification algorithm." />
+<meta property="og:url" content="https://docs.dothawk.xyz/hip-1" />
+<meta property="og:image" content="https://docs.dothawk.xyz/og-default.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --blue: #0016e8;
+  --sky: #96a5ff;
+  --copper: #e25615;
+  --ink: #10142b;
+  --paper: #f4f5fb;
+  --grey: #787e99;
+  --navy: #070c33;
+  --hairline: rgba(120, 126, 153, 0.4);
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --ui: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+  --r-card: 20px;
+  --r-pill: 999px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--ui); font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--ink); }
+a:hover { color: var(--blue); }
+.shell { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 20px 64px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--hairline);
+}
+.topbar-inner {
+  max-width: 760px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.brand img { border-radius: 7px; display: block; }
+.wordmark { font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: -0.02em; }
+.docs-tag {
+  font-family: var(--mono); font-size: 12px; color: #fff;
+  background: var(--blue); border-radius: var(--r-pill); padding: 2px 10px;
+}
+.topnav { display: flex; gap: 14px; margin-left: auto; flex-wrap: wrap; }
+.topnav a { text-decoration: none; font-size: 14px; color: var(--grey); }
+.topnav a:hover { color: var(--blue); }
+
+h1 {
+  font-family: var(--display); font-weight: 700; letter-spacing: -0.02em;
+  font-size: clamp(30px, 6vw, 44px); line-height: 1.08; margin: 40px 0 14px;
+}
+h2 {
+  font-family: var(--display); font-weight: 700; letter-spacing: -0.015em;
+  font-size: 25px; margin: 52px 0 10px; padding-top: 18px;
+  border-top: 1px solid var(--hairline);
+}
+h3 { font-family: var(--display); font-weight: 500; font-size: 19px; margin: 26px 0 6px; }
+p { margin: 10px 0; }
+.lede { font-size: 18px; max-width: 58ch; }
+.muted { color: var(--grey); }
+.small { font-size: 14px; }
+strong { font-weight: 600; }
+
+.band {
+  display: inline-flex; align-items: baseline; white-space: nowrap;
+  font-family: var(--mono); font-weight: 500;
+  border-radius: var(--r-pill); padding: 4px 14px;
+  border: 1.5px solid var(--ink); background: transparent;
+}
+.band .sfx { opacity: 0.55; }
+.band.navy { background: var(--navy); border-color: var(--navy); color: var(--paper); }
+.band.navy .sfx { color: var(--sky); opacity: 1; }
+
+pre {
+  background: var(--navy); color: var(--paper);
+  font-family: var(--mono); font-size: 13.5px; line-height: 1.55;
+  border-radius: var(--r-card); padding: 18px 20px;
+  overflow-x: auto; margin: 14px 0;
+}
+pre .c { color: var(--grey); }
+pre .g { color: var(--sky); }
+pre .b { color: #b9c3ff; }
+code {
+  font-family: var(--mono); font-size: 0.92em;
+  background: rgba(120, 126, 153, 0.16); border-radius: 6px; padding: 1px 6px;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+.card {
+  border: 1px solid var(--hairline); border-radius: var(--r-card);
+  padding: 16px 20px; margin: 14px 0; background: #fff;
+}
+.tablewrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: var(--r-card); margin: 14px 0; background: #fff; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--hairline); }
+tr:last-child td { border-bottom: none; }
+th { font-weight: 600; font-size: 13px; color: var(--grey); }
+td code, td a { font-family: var(--mono); font-size: 12.5px; text-decoration: none; }
+ol, ul { padding-left: 22px; }
+li { margin: 6px 0; }
+li::marker { color: var(--grey); }
+.req { font-family: var(--mono); font-size: 11.5px; border-radius: var(--r-pill); padding: 2px 9px; white-space: nowrap; }
+.req.must { background: var(--blue); color: #fff; }
+.req.should { background: var(--navy); color: var(--sky); }
+.req.may { border: 1.5px solid var(--hairline); color: var(--grey); }
+
+footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
+.footer-inner { max-width: 760px; margin: 0 auto; padding: 34px 20px 44px; }
+.footer-inner a { color: var(--paper); text-decoration: none; }
+.footer-inner a:hover { color: var(--sky); }
+.footer-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.footer-brand img { border-radius: 6px; }
+.footer-brand .wordmark { color: var(--paper); }
+.footer-links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; margin-top: 14px; font-family: var(--mono); }
+@media (max-width: 560px) { .topnav { gap: 10px; } h2 { font-size: 22px; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://dothawk.xyz">
+      <img src="hawk-mark.png" alt="" width="26" height="26" />
+      <span class="wordmark">hawk</span>
+    </a>
+    <span class="docs-tag">HIP-1</span>
+    <nav class="topnav">
+      <a href="index.html">docs</a>
+      <a href="#records">records</a>
+      <a href="#verification">verification</a>
+      <a href="#security">security</a>
+    </nav>
+  </div>
+</div>
+
+<div class="shell">
+
+<h1>HIP-1: Agent Capability Cards.</h1>
+<p class="lede">
+  An open convention for machine-readable agent identity on Base:
+  a small set of text records on a <code>.hawk</code> name, and one
+  verification algorithm any counterparty can run.
+</p>
+
+<div class="tablewrap"><table>
+  <tr><th>hip</th><td>1</td></tr>
+  <tr><th>title</th><td>Agent Capability Cards</td></tr>
+  <tr><th>status</th><td>Live</td></tr>
+  <tr><th>created</th><td>2026-08-23</td></tr>
+  <tr><th>requires</th><td>ERC-137 (registry), ENSIP-5 (text records), ENSIP-15 (normalization)</td></tr>
+  <tr><th>reference implementation</th><td><a href="https://api.dothawk.xyz/verify/genesis.hawk">api.dothawk.xyz/verify/:name</a></td></tr>
+</table></div>
+
+<h2 id="abstract">Abstract.</h2>
+<p>
+  A capability card is the machine-readable profile of an on-chain agent,
+  published as standard ENS text records on the agent&rsquo;s
+  <code>.hawk</code> name. Because the records live in ENS-standard
+  infrastructure, every wallet, explorer, and library that speaks ENS can
+  already read them — this document only fixes the <em>vocabulary</em> and
+  the <em>verification algorithm</em> so that independent implementations
+  agree on what &ldquo;verified&rdquo; means.
+</p>
+
+<h2 id="motivation">Motivation.</h2>
+<p>
+  Agents transact with counterparties they have never met. Before trusting
+  <span class="band navy">bot1.acme<span class="sfx">.hawk</span></span> a
+  counterparty needs three answers with cryptographic backing: <strong>is this
+  name real, which account does it act from, and who does it answer
+  to?</strong> Self-hosted allowlists don&rsquo;t compose; bespoke registry
+  contracts fragment tooling. Text records on a hierarchical name answer all
+  three with infrastructure that already exists, at the cost of agreeing on a
+  few keys — which is this spec.
+</p>
+
+<h2 id="records">Specification — the records.</h2>
+<p>
+  A capability card is set on a registered <code>.hawk</code> name (a 2LD like
+  <code>acme.hawk</code> or a subname like <code>bot1.acme.hawk</code>) through
+  its resolver. Requirement language follows RFC&nbsp;2119.
+</p>
+<div class="tablewrap"><table>
+  <tr><th>record</th><th>level</th><th>value</th></tr>
+  <tr>
+    <td>address (coinType 60)</td>
+    <td><span class="req must">MUST</span></td>
+    <td>the account the agent acts from — <code>setAddr(node, account)</code>. Without it the name cannot verify.</td>
+  </tr>
+  <tr>
+    <td><code>agent.capabilities</code></td>
+    <td><span class="req must">MUST</span></td>
+    <td>comma-separated lowercase verbs: <code>swap,quote,settlement</code>. Publishing a non-empty value is the opt-in that lists the agent in the <a href="https://dothawk.xyz/agents">directory</a>; clearing it delists.</td>
+  </tr>
+  <tr>
+    <td><code>url</code></td>
+    <td><span class="req should">SHOULD</span></td>
+    <td>HTTPS endpoint where the agent (or its API / A2A interface) is reachable.</td>
+  </tr>
+  <tr>
+    <td><code>description</code></td>
+    <td><span class="req should">SHOULD</span></td>
+    <td>one or two plain-text sentences: what this agent does.</td>
+  </tr>
+  <tr>
+    <td><code>agent.model</code></td>
+    <td><span class="req may">MAY</span></td>
+    <td>model / runtime identifier, free text.</td>
+  </tr>
+  <tr>
+    <td><code>agent.operator</code></td>
+    <td><span class="req may">MAY</span></td>
+    <td>informative operator label. The <em>cryptographic</em> operator is always the parent name — this record never overrides it.</td>
+  </tr>
+  <tr>
+    <td><code>avatar</code></td>
+    <td><span class="req may">MAY</span></td>
+    <td>image URI, standard ENS avatar format.</td>
+  </tr>
+</table></div>
+<p class="small muted">
+  Future keys in this convention MUST use the <code>agent.</code> namespace.
+  Capability verbs are free-form; implementations MUST treat unknown verbs as
+  opaque strings. A short common vocabulary (non-normative):
+  <code>swap</code>, <code>quote</code>, <code>lend</code>,
+  <code>rebalance</code>, <code>settlement</code>, <code>payments</code>,
+  <code>custody</code>, <code>data</code>, <code>oracle</code>,
+  <code>compute</code>, <code>social</code>.
+</p>
+
+<h2 id="verification">Specification — verification.</h2>
+<p>
+  Given a claimed name, a conforming verifier computes:
+</p>
+<ol>
+  <li><strong>Normalize</strong> the name per ENSIP-15; reject on failure.
+    Compute <code>node = namehash(name)</code>.</li>
+  <li><strong>registered</strong> — the node exists in the registry
+    (a 2LD registration, or an issued subname).</li>
+  <li><strong>rootActive</strong> — the name&rsquo;s 2LD ancestor
+    (<code>acme.hawk</code> for <code>bot1.acme.hawk</code>) is unexpired:
+    <code>expiry &gt; now</code>. A name in its grace period is
+    <em>not</em> active. Every agent inherits its root&rsquo;s liveness —
+    if the root lapses, the whole fleet fails verification.</li>
+  <li><strong>addressSet</strong> — <code>addr(node, 60)</code> is non-null.</li>
+  <li><strong>verified = registered ∧ rootActive ∧ addressSet.</strong></li>
+  <li><strong>primaryMatch</strong> (optional, strongest signal) — the
+    address&rsquo;s reverse record resolves to exactly this name. Only the
+    account holder can set it, so it binds name and account in both
+    directions. Verifiers SHOULD report it; high-value counterparties
+    SHOULD require it.</li>
+  <li><strong>Operator chain</strong> — walk successive parents up to the
+    2LD and report each ancestor&rsquo;s name and owner. This is the
+    delegation proof: an agent answers to its chain, or it doesn&rsquo;t
+    resolve under it.</li>
+</ol>
+<p>
+  <strong>Freshness.</strong> Verdicts are point-in-time reads of live chain
+  state. Consumers MUST NOT cache a verdict beyond 60 seconds.
+  <strong>Revocation</strong> needs no announcement: the operator clears the
+  address record, deletes the subname, or lets the root expire — and the
+  name stops verifying for everyone on the next read.
+</p>
+
+<h3>Reference implementation.</h3>
+<pre><code>curl -s <span class="b">https://api.dothawk.xyz/verify/genesis.hawk</span></code></pre>
+<p class="small muted">
+  Open CORS, ~30&nbsp;s cache. Returns the checks above plus the operator
+  chain and the full capability card. The directory feed is
+  <code>GET api.dothawk.xyz/agents</code> (<code>?operator=</code> filters a
+  fleet). Both are convenience surfaces over public chain state — anyone can
+  recompute every answer from Base directly, with no permission from hawk.
+</p>
+
+<h3>On-chain, without the API.</h3>
+<pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;
+<span class="c">import</span> { base } <span class="c">from</span> <span class="b">"hawk-names"</span>;
+
+<span class="c">const</span> client = createPublicClient({ chain: base, transport: http() });
+<span class="c">const</span> address = <span class="c">await</span> client.getEnsAddress({ name: <span class="b">"bot1.acme.hawk"</span> });   <span class="c">// addressSet</span>
+<span class="c">const</span> primary = <span class="c">await</span> client.getEnsName({ address });                     <span class="c">// primaryMatch</span>
+<span class="c">const</span> caps    = <span class="c">await</span> client.getEnsText({ name: <span class="b">"bot1.acme.hawk"</span>, key: <span class="b">"agent.capabilities"</span> });</code></pre>
+
+<h2 id="security">Security considerations.</h2>
+<ul>
+  <li><strong>Capability cards are self-attested.</strong> Verification proves
+    <em>identity and delegation</em> — which account, answering to which
+    operator — never competence, honesty, or safety. <code>swap</code> in a
+    record means the operator says it swaps.</li>
+  <li><strong>Trust the chain, not the label.</strong>
+    <code>agent.operator</code> is informative; the operator that counts is
+    the parent name in the namehash chain.</li>
+  <li><strong>Require the round-trip for value.</strong> Anyone can point a
+    name at any address, but only the address holder can point back. Before
+    sending funds, demand <code>primaryMatch</code>.</li>
+  <li><strong>Expiry is a feature.</strong> Roots lapse; verdicts go stale in
+    seconds. Re-verify per session, not per relationship.</li>
+</ul>
+
+<h2 id="versioning">Versioning.</h2>
+<p>
+  This document is v1 and covers everything the live verifier implements.
+  Additive keys (new <code>agent.*</code> records) do not change the version.
+  Any change to the verification algorithm is a new HIP.
+</p>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="hawk-mark.png" alt="" width="28" height="28" />
+      <span class="wordmark">hawk</span>
+    </div>
+    <p class="small">Agent identity on Base. ENS-standard resolution, on-chain SVG art, locked metadata.</p>
+    <div class="footer-links">
+      <a href="https://dothawk.xyz">dothawk.xyz</a>
+      <a href="https://dothawk.xyz/agents">dothawk.xyz/agents</a>
+      <a href="https://api.dothawk.xyz">api.dothawk.xyz</a>
+      <a href="index.html">docs</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
