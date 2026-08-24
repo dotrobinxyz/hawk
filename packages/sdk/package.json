@@ -1,6 +1,6 @@
 {
   "name": "hawk-names",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Resolve and register .hawk names on Base — ENS-standard resolution with a one-line viem config.",
   "license": "MIT",
   "author": "dotrobinxyz",
