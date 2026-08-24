@@ -107,6 +107,49 @@ export async function fetchRecentActivity(): Promise<ActivityItem[]> {
   return data.registrationEvents.items;
 }
 
+/** A parent's issued subnames plus their fleet-relevant records. */
+export async function fetchFleet(parentNode: string): Promise<{
+  subnames: IndexedSubname[];
+  addrByNode: Record<string, `0x${string}`>;
+  capsByNode: Record<string, string>;
+}> {
+  const data = await gql<{ subnames: { items: IndexedSubname[] } }>(
+    `query ($p: String!) {
+      subnames(where: { parentNode: $p }, orderBy: "createdAt", orderDirection: "desc", limit: 200) {
+        items { id name parentNode owner fuses expiry }
+      }
+    }`,
+    { p: parentNode.toLowerCase() },
+  );
+  const subnames = data.subnames.items;
+  if (subnames.length === 0) return { subnames, addrByNode: {}, capsByNode: {} };
+
+  const nodes = subnames.map((s) => s.id);
+  const records = await gql<{
+    addressRecords: { items: { node: string; coinType: string; value: `0x${string}` | null }[] };
+    textRecords: { items: { node: string; value: string | null }[] };
+  }>(
+    `query ($nodes: [String!]!) {
+      addressRecords(where: { node_in: $nodes }, limit: 500) {
+        items { node coinType value }
+      }
+      textRecords(where: { node_in: $nodes, key: "agent.capabilities" }, limit: 500) {
+        items { node value }
+      }
+    }`,
+    { nodes },
+  );
+  const addrByNode: Record<string, `0x${string}`> = {};
+  for (const r of records.addressRecords.items) {
+    if (r.coinType === "60" && r.value) addrByNode[r.node] = r.value;
+  }
+  const capsByNode: Record<string, string> = {};
+  for (const r of records.textRecords.items) {
+    if (r.value) capsByNode[r.node] = r.value;
+  }
+  return { subnames, addrByNode, capsByNode };
+}
+
 export type Stats = {
   names: string;
   registrations: string;

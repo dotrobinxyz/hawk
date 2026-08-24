@@ -116,6 +116,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <NavLink href="/my" label="my names" />
         <NavLink href="/auctions" label="auctions" />
         {AGENTS_ENABLED && <NavLink href="/agents" label="agents" />}
+        {AGENTS_ENABLED && <NavLink href="/fleet" label="fleet" />}
       </nav>
 
       <main>{children}</main>

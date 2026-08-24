@@ -10,6 +10,7 @@ import { NamePage } from "./pages/NamePage";
 import { MyNames } from "./pages/MyNames";
 import { Auctions } from "./pages/Auctions";
 import { AgentsPage } from "./pages/Agents";
+import { Fleet } from "./pages/Fleet";
 import "./styles.css";
 
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             {AGENTS_ENABLED && (
               <Route path="/agents">{() => <AgentsPage />}</Route>
             )}
+            {AGENTS_ENABLED && <Route path="/fleet" component={Fleet} />}
             <Route>
               <div className="empty">Nothing here.</div>
             </Route>
