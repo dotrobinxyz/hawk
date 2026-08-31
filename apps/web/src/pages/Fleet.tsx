@@ -489,7 +489,7 @@ function FleetRow({
           <BandChip name={sub.name.replace(/\.hawk$/, "")} size="sm" />
         </a>
         <span className="muted small mono">
-          {addr ? (
+          {addr && addr !== ZERO_ADDR ? (
             EXPLORER ? (
               <a href={`${EXPLORER}/address/${addr}`} target="_blank" rel="noreferrer">
                 {shortAddress(addr)}
@@ -540,6 +540,7 @@ function BulkCard({
   const [caps, setCaps] = useState("");
   const [model, setModel] = useState("");
   const [url, setUrl] = useState("");
+  const [agentAddr, setAgentAddr] = useState("");
 
   const fields: [string, string][] = [
     ["agent.capabilities", caps],
@@ -547,12 +548,29 @@ function BulkCard({
     ["url", url],
   ];
   const active = fields.filter(([, v]) => v.trim() !== "");
+  const addrTrim = agentAddr.trim();
+  const addrValid = addrTrim === "" || isAddress(addrTrim);
 
   async function apply() {
-    if (!walletClient || !address || nodes.length === 0 || active.length === 0)
+    if (
+      !walletClient ||
+      !address ||
+      nodes.length === 0 ||
+      (active.length === 0 && addrTrim === "") ||
+      !addrValid
+    )
       return;
     const calls: Hex[] = [];
     for (const node of nodes) {
+      if (addrTrim !== "") {
+        calls.push(
+          encodeFunctionData({
+            abi: publicResolverAbi,
+            functionName: "setAddr",
+            args: [node as Hex, addrTrim as Address],
+          }),
+        );
+      }
       for (const [key, value] of active) {
         calls.push(
           encodeFunctionData({
@@ -580,6 +598,7 @@ function BulkCard({
         setCaps("");
         setModel("");
         setUrl("");
+        setAgentAddr("");
         onDone();
       },
     );
@@ -595,6 +614,22 @@ function BulkCard({
         a single transaction. Filled fields overwrite; empty fields are left
         untouched.
       </p>
+      <div className="field">
+        <label>agent address — rotate keys without reissuing</label>
+        <input
+          className="input mono"
+          placeholder="0xAgentAccount"
+          value={agentAddr}
+          onChange={(e) => setAgentAddr(e.target.value)}
+          autoCapitalize="none"
+          spellCheck={false}
+        />
+        {!addrValid && (
+          <p className="small" style={{ color: "#c0392b", margin: "6px 0 0" }}>
+            not a valid address
+          </p>
+        )}
+      </div>
       <div className="field">
         <label>agent.capabilities</label>
         <input
@@ -628,7 +663,12 @@ function BulkCard({
       <button
         className="btn block"
         onClick={apply}
-        disabled={busy !== null || count === 0 || active.length === 0}
+        disabled={
+          busy !== null ||
+          count === 0 ||
+          (active.length === 0 && addrTrim === "") ||
+          !addrValid
+        }
       >
         {busy ? <span className="progress-ring" /> : null}
         apply to {count} agent{count === 1 ? "" : "s"} — one transaction
