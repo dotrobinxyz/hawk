@@ -46,6 +46,46 @@ const resourceServer = new x402ResourceServer(facilitatorClient()).register(
   new ExactEvmScheme(),
 );
 
+// The facilitator handshake happens lazily on the first paid request —
+// never at boot, and a facilitator outage answers 503 instead of 500s.
+let facilitatorReady: Promise<void> | null = null;
+function ensureFacilitator(): Promise<void> {
+  facilitatorReady ??= resourceServer.initialize().catch((e) => {
+    facilitatorReady = null;
+    throw e;
+  });
+  return facilitatorReady;
+}
+
+paidApi.use(async (c, next) => {
+  if (!c.req.path.endsWith("/directory/export")) return next();
+  try {
+    await ensureFacilitator();
+  } catch (e) {
+    return c.json(
+      {
+        error: "payment facilitator unavailable for this network",
+        hint: "Base mainnet settlement requires the Coinbase facilitator (CDP_API_KEY_ID/SECRET) or a facilitator that supports eip155:8453.",
+        detail: String(e).slice(0, 200),
+      },
+      503,
+    );
+  }
+  // The x402 middleware answers 500 on its own when the facilitator lacks
+  // our network — check support here first and answer with the actionable
+  // truth instead.
+  if (!resourceServer.getSupportedKind(2, NETWORK, "exact")) {
+    return c.json(
+      {
+        error: "payment facilitator does not support Base mainnet (eip155:8453)",
+        hint: "Set CDP_API_KEY_ID/CDP_API_KEY_SECRET on the indexer to use the Coinbase facilitator, or point HAWK_X402_FACILITATOR_URL at a mainnet-capable facilitator.",
+      },
+      503,
+    );
+  }
+  await next();
+});
+
 paidApi.use(
   paymentMiddleware(
     {
