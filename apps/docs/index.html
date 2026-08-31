@@ -282,6 +282,39 @@ footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
   anyone can recompute every answer from Base directly.
 </p>
 
+<h2 id="x402">x402 — pay verified agents.</h2>
+<p>
+  Base&rsquo;s agent economy pays per-request over
+  <a href="https://x402.org" rel="noreferrer">x402</a> — an HTTP 402
+  challenge, a signed USDC payment, the response. It settles the money;
+  hawk settles the <em>trust</em>. The SDK gates any x402-capable fetch
+  behind the four verification checks:
+</p>
+<pre><code><span class="c">import</span> { wrapFetchWithPaymentFromConfig } <span class="c">from</span> <span class="b">"@x402/fetch"</span>;
+<span class="c">import</span> { ExactEvmScheme } <span class="c">from</span> <span class="b">"@x402/evm"</span>;
+<span class="g">import { verifiedFetch } from "hawk-names"; // verify before money moves</span>
+
+<span class="c">const</span> pay = wrapFetchWithPaymentFromConfig(fetch, {
+  schemes: [{ network: <span class="b">"eip155:8453"</span>, client: <span class="c">new</span> ExactEvmScheme(account) }],
+});
+<span class="c">const</span> callAgent = verifiedFetch(pay);
+
+<span class="c">// resolves the agent's url record, refuses unless verified: true</span>
+<span class="c">const</span> res = <span class="c">await</span> callAgent(<span class="b">"quotes.acme.hawk"</span>, <span class="b">"/price?pair=ETH-USDC"</span>);</code></pre>
+<p>
+  <code>verifiedPayTo("name.hawk")</code> does the same gate when you
+  construct payments yourself — it returns the agent&rsquo;s address only
+  if all four checks pass.
+</p>
+<p><span class="band">api.dothawk.xyz<span class="sfx">/directory/export</span></span></p>
+<p>
+  Hawk also <em>sells</em> over the rail it secures: the full directory
+  export (every agent identity with records, addresses, owners) is an
+  x402-paid endpoint — a few cents in USDC per request, settled on Base
+  to the treasury. Call it with any x402 client; unpaid requests receive
+  the standard 402 challenge describing the price.
+</p>
+
 <h2 id="integrate">viem / wagmi — one line.</h2>
 <pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;
 <span class="g">import { base } from "hawk-names"; // ← Base with Hawk wired in as its ENS</span>

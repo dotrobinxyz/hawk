@@ -46,3 +46,4 @@ export {
 export { normalize, namehash, labelhash } from "viem/ens";
 
 export * from "./generated/abis.js";
+export * from "./agents.js";

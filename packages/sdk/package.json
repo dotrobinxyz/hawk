@@ -1,7 +1,7 @@
 {
   "name": "hawk-names",
-  "version": "0.1.1",
-  "description": "Resolve and register .hawk names on Base — ENS-standard resolution with a one-line viem config.",
+  "version": "0.2.0",
+  "description": "Resolve and register .hawk names on Base \u2014 ENS-standard resolution with a one-line viem config.",
   "license": "MIT",
   "author": "dotrobinxyz",
   "homepage": "https://docs.dothawk.xyz",
@@ -20,6 +20,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./agents": {
+      "types": "./dist/agents.d.ts",
+      "default": "./dist/agents.js"
     }
   },
   "files": [

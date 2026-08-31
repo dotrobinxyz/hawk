@@ -3,6 +3,7 @@ import schema from "ponder:schema";
 import { Hono } from "hono";
 import { client, graphql } from "ponder";
 import { agentApi } from "./agents";
+import { paidApi } from "./paid";
 
 const app = new Hono();
 
@@ -13,6 +14,12 @@ const app = new Hono();
 // response), so no middleware here.
 if (process.env.HAWK_AGENT_API === "1") {
   app.route("/", agentApi);
+}
+
+// Premium x402-paid endpoints (/directory/export) — same dark-launch
+// pattern: absent flag, absent routes.
+if (process.env.HAWK_X402 === "1") {
+  app.route("/", paidApi);
 }
 
 // SQL-over-HTTP for @ponder/client consumers.
