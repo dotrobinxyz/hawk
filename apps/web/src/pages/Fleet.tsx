@@ -702,16 +702,28 @@ function BondCard({ parentLabel }: { parentLabel: string }) {
     pending: bigint;
     unlockAt: bigint;
   } | null>(null);
+  const [nameOwner, setNameOwner] = useState<string | null>(null);
 
   async function refresh() {
     if (!publicClient) return;
-    const [a, amt, usd, , pending, unlockAt] = await publicClient.readContract({
-      address: HAWK_BOND,
-      abi: bondAbi,
-      functionName: "bondOf",
-      args: [node],
-    });
+    const [[a, amt, usd, , pending, unlockAt], owner] = await Promise.all([
+      publicClient.readContract({
+        address: HAWK_BOND,
+        abi: bondAbi,
+        functionName: "bondOf",
+        args: [node],
+      }),
+      publicClient
+        .readContract({
+          address: HAWK_BOND,
+          abi: bondAbi,
+          functionName: "nameOwner",
+          args: [lh],
+        })
+        .catch(() => null),
+    ]);
     setState({ asset: a, amount: amt, usd, pending, unlockAt: BigInt(unlockAt) });
+    setNameOwner(owner && owner !== "0x0000000000000000000000000000000000000000" ? owner : null);
   }
   useEffect(() => {
     refresh();
@@ -720,6 +732,10 @@ function BondCard({ parentLabel }: { parentLabel: string }) {
 
   const usdDisplay = state && state.usd > 0n ? `$${(Number(state.usd) / 1e18).toFixed(2)}` : null;
   const hasBond = state && (state.amount > 0n || state.pending > 0n);
+  // Every bond call is owner-gated on-chain; catching a wrong active account
+  // here beats a wallet that silently greys out its confirm button.
+  const wrongAccount =
+    nameOwner != null && address != null && nameOwner.toLowerCase() !== address.toLowerCase();
   const unlockReady =
     state != null && state.pending > 0n && Number(state.unlockAt) * 1000 <= Date.now();
 
@@ -825,6 +841,14 @@ function BondCard({ parentLabel }: { parentLabel: string }) {
         </p>
       )}
 
+      {wrongAccount && (
+        <p className="notice danger small" style={{ margin: "0 0 10px", wordBreak: "break-all" }}>
+          {parentLabel}.hawk is owned by <span className="mono">{nameOwner}</span> — your
+          wallet's active account is <span className="mono">{address}</span>. Switch accounts
+          in your wallet to bond, exit, or claim.
+        </p>
+      )}
+
       <div className="row wrap" style={{ gap: 8 }}>
         <input
           className="input mono"
@@ -848,16 +872,24 @@ function BondCard({ parentLabel }: { parentLabel: string }) {
         >
           HAWK
         </button>
-        <button className="btn small" disabled={busy !== null || !amount} onClick={bondNow}>
+        <button
+          className="btn small"
+          disabled={busy !== null || !amount || wrongAccount}
+          onClick={bondNow}
+        >
           {busy ? <span className="progress-ring" /> : null} bond
         </button>
         {hasBond && state && state.amount > 0n && (
-          <button className="btn small secondary" disabled={busy !== null} onClick={requestExit}>
+          <button
+            className="btn small secondary"
+            disabled={busy !== null || wrongAccount}
+            onClick={requestExit}
+          >
             request exit
           </button>
         )}
         {unlockReady && (
-          <button className="btn small" disabled={busy !== null} onClick={claim}>
+          <button className="btn small" disabled={busy !== null || wrongAccount} onClick={claim}>
             claim
           </button>
         )}

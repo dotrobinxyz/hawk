@@ -16,6 +16,7 @@ export const bondAbi = parseAbi([
   "function requestWithdraw(uint256 labelhash, uint256 amount)",
   "function claimWithdraw(uint256 labelhash)",
   "function quoteHawkForUsdc(uint256 usdcAmount) view returns (uint256)",
+  "function nameOwner(uint256 labelhash) view returns (address)",
   "function totalHawkBurned() view returns (uint256)",
   "function buybackPool() view returns (uint256)",
 ]);
