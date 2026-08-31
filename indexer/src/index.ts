@@ -1,6 +1,7 @@
 import { ponder } from "ponder:registry";
 import {
   addressRecord,
+  bond,
   contenthashRecord,
   name,
   primaryName,
@@ -519,4 +520,65 @@ ponder.on("HawkReservedList:ReservationChanged", async ({ event, context }) => {
       reserved: event.args.reserved,
       updatedAt: event.block.timestamp,
     });
+});
+
+// ---------------------------------------------------------------------------
+// Operator bonds (HawkBond)
+// ---------------------------------------------------------------------------
+
+async function bondLabel(context: { db: { sql: any } }, node: `0x${string}`): Promise<string | null> {
+  const row = await context.db.sql
+    .select()
+    .from(name)
+    .where(eq(name.node, node))
+    .limit(1);
+  return row[0]?.label ?? null;
+}
+
+ponder.on("HawkBond:Bonded", async ({ event, context }) => {
+  const node = event.args.node as `0x${string}`;
+  const label = await bondLabel(context, node);
+  await context.db
+    .insert(bond)
+    .values({
+      node,
+      label,
+      asset: event.args.asset,
+      amount: event.args.amountNet,
+      pendingAmount: 0n,
+      unlockAt: 0n,
+      since: event.block.timestamp,
+      updatedAt: event.block.timestamp,
+    })
+    .onConflictDoUpdate((row) => ({
+      label,
+      asset: event.args.asset,
+      amount: row.amount + event.args.amountNet,
+      updatedAt: event.block.timestamp,
+    }));
+});
+
+ponder.on("HawkBond:WithdrawRequested", async ({ event, context }) => {
+  const node = event.args.node as `0x${string}`;
+  await context.db
+    .update(bond, { node })
+    .set((row) => ({
+      amount: row.amount - event.args.amount,
+      pendingAmount: row.pendingAmount + event.args.amount,
+      unlockAt: BigInt(event.args.unlockAt),
+      updatedAt: event.block.timestamp,
+    }))
+    .catch(() => {});
+});
+
+ponder.on("HawkBond:Withdrawn", async ({ event, context }) => {
+  const node = event.args.node as `0x${string}`;
+  await context.db
+    .update(bond, { node })
+    .set(() => ({
+      pendingAmount: 0n,
+      unlockAt: 0n,
+      updatedAt: event.block.timestamp,
+    }))
+    .catch(() => {});
 });

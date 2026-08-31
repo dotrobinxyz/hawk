@@ -90,7 +90,7 @@ agentApi.get("/verify/:name", async (c) => {
   const rootNode = namehash(rootName) as Hex;
   const now = BigInt(Math.floor(Date.now() / 1000));
 
-  const [rootRows, subRows, { records, address }] = await Promise.all([
+  const [rootRows, subRows, { records, address }, bondRows] = await Promise.all([
     db
       .select()
       .from(schema.name)
@@ -104,6 +104,11 @@ agentApi.get("/verify/:name", async (c) => {
           .limit(1)
       : Promise.resolve([]),
     recordsAt(node),
+    db
+      .select()
+      .from(schema.bond)
+      .where(eq(schema.bond.node, rootNode))
+      .limit(1)
   ]);
   const root = rootRows[0] ?? null;
   const sub = subRows[0] ?? null;
@@ -158,9 +163,29 @@ agentApi.get("/verify/:name", async (c) => {
     primaryMatch: address != null && primary === name,
   };
 
+  const bondRow = bondRows?.[0] ?? null;
+  const bondInfo =
+    bondRow && (bondRow.amount > 0n || bondRow.pendingAmount > 0n)
+      ? {
+          asset: bondRow.asset,
+          amount: bondRow.amount.toString(),
+          pendingAmount: bondRow.pendingAmount.toString(),
+          unlockAt: bondRow.unlockAt > 0n ? bondRow.unlockAt.toString() : null,
+          since: bondRow.since.toString(),
+          // USDC reports 1:1; HAWK bonds need a live price — read bondOf()
+          // on HawkBond 0xE7d326fB486aCC1ae90559fBCe9863503C9DbC83 for USD.
+          usd:
+            bondRow.asset.toLowerCase() ===
+            "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+              ? (Number(bondRow.amount) / 1e6).toFixed(2)
+              : null,
+        }
+      : null;
+
   c.header("cache-control", "public, max-age=30");
   return c.json({
     name,
+    bond: bondInfo,
     node,
     verified: checks.registered && checks.rootActive && checks.addressSet,
     checks,

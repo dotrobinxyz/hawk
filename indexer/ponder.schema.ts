@@ -148,3 +148,16 @@ export const stats = onchainTable("stats", (t) => ({
   ethRevenueWei: t.bigint().notNull().default(0n),
   usdcRevenue: t.bigint().notNull().default(0n),
 }));
+
+/// Operator bonds (HawkBond): live amounts per 2LD node, maintained from
+/// events. The verify API and directory surface these as "bonded".
+export const bond = onchainTable("bond", (t) => ({
+  node: t.hex().primaryKey(),
+  label: t.text(),
+  asset: t.hex().notNull(),
+  amount: t.bigint().notNull(),
+  pendingAmount: t.bigint().notNull(),
+  unlockAt: t.bigint().notNull(),
+  since: t.bigint().notNull(),
+  updatedAt: t.bigint().notNull(),
+}));

@@ -10,6 +10,7 @@ import {
   hawkRegistryAbi,
   hawkReservedListAbi,
   hawkWrapperAbi,
+  hawkBondAbi,
 } from "./abis/hawk";
 
 // Network selection: HAWK_NETWORK ∈ local | base-sepolia | base.
@@ -115,6 +116,12 @@ export default createConfig({
       abi: reverseRegistrarAbi,
       address: deployment.ReverseRegistrar as `0x${string}`,
       startBlock,
+    },
+    HawkBond: {
+      chain: "base",
+      abi: hawkBondAbi,
+      address: "0xE7d326fB486aCC1ae90559fBCe9863503C9DbC83",
+      startBlock: network === "base" ? 50_699_178 : 2_000_000_000,
     },
   },
 });

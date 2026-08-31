@@ -5263,3 +5263,48 @@ export const reverseRegistrarAbi = [
     "anonymous": false
   }
 ] as const;
+
+export const hawkBondAbi = [
+  {
+    "type": "event",
+    "name": "Bonded",
+    "inputs": [
+      { "name": "node", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "asset", "type": "address", "indexed": true, "internalType": "address" },
+      { "name": "amountNet", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "fee", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "by", "type": "address", "indexed": false, "internalType": "address" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "WithdrawRequested",
+    "inputs": [
+      { "name": "node", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "unlockAt", "type": "uint64", "indexed": false, "internalType": "uint64" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Withdrawn",
+    "inputs": [
+      { "name": "node", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "to", "type": "address", "indexed": false, "internalType": "address" },
+      { "name": "amount", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "BuybackExecuted",
+    "inputs": [
+      { "name": "caller", "type": "address", "indexed": true, "internalType": "address" },
+      { "name": "usdcIn", "type": "uint256", "indexed": false, "internalType": "uint256" },
+      { "name": "hawkBurned", "type": "uint256", "indexed": false, "internalType": "uint256" }
+    ],
+    "anonymous": false
+  }
+] as const;
