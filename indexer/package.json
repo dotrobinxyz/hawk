@@ -12,8 +12,12 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "ponder": "^0.17.8",
+    "@coinbase/x402": "^2.1.0",
+    "@x402/core": "^2.24.0",
+    "@x402/evm": "^2.24.0",
+    "@x402/hono": "^2.24.0",
     "hono": "^4.5.0",
+    "ponder": "^0.17.8",
     "viem": "2.35.0"
   },
   "devDependencies": {
