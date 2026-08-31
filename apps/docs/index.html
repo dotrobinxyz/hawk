@@ -315,6 +315,38 @@ footer { background: var(--navy); color: var(--paper); margin-top: 72px; }
   the standard 402 challenge describing the price.
 </p>
 
+<h2 id="bonds">Bonded operators — skin in the game.</h2>
+<p>
+  Anyone can claim capabilities; nobody can fake a deposit. An operator
+  locks <strong>USDC or $HAWK</strong> behind their 2LD name in the
+  <a href="https://basescan.org/address/0xE7d326fB486aCC1ae90559fBCe9863503C9DbC83" rel="noreferrer">HawkBond</a>
+  contract, and every agent under that name shows the bond in the
+  directory and the verify API:
+</p>
+<pre><code>curl -s <span class="b">https://api.dothawk.xyz/verify/quotes.acme.hawk</span>
+
+{
+  <span class="g">"verified": true,</span>
+  <span class="b">"bond"</span>: { <span class="b">"asset"</span>: <span class="b">"USDC"</span>, <span class="b">"amount"</span>: <span class="b">"980000000"</span>, <span class="b">"usd"</span>: <span class="b">"980.00"</span>,
+            <span class="b">"pendingAmount"</span>: <span class="b">"0"</span>, <span class="b">"unlockAt"</span>: null },
+  <span class="c">…</span>
+}</code></pre>
+<p>
+  The rules are immutable: <strong>$100 minimum</strong> (net), a one-time
+  <strong>2% fee on USDC</strong> — half accrues to a public
+  buyback-and-burn of $HAWK, half to the treasury — or <strong>1% on
+  $HAWK</strong>, burned directly. Exits run through a
+  <strong>public 7-day window</strong>: the withdrawal request is itself an
+  on-chain event, so a fleet whose bond is leaving is visibly leaving.
+  Bonds ride with the name; the contract&rsquo;s owner can only re-route
+  the buyback — bonds are untouchable.
+</p>
+<p class="small muted">
+  Manage bonds from the <a href="https://dothawk.xyz/fleet">fleet
+  console</a>. The buyback is a public crank: once accumulated fees reach
+  $25, anyone may trigger the USDC&rarr;ETH&rarr;$HAWK swap-and-burn.
+</p>
+
 <h2 id="integrate">viem / wagmi — one line.</h2>
 <pre><code><span class="c">import</span> { createPublicClient, http } <span class="c">from</span> <span class="b">"viem"</span>;
 <span class="g">import { base } from "hawk-names"; // ← Base with Hawk wired in as its ENS</span>

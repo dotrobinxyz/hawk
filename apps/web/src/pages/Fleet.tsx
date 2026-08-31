@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -11,12 +11,14 @@ import {
   hawkWrapperAbi,
   publicResolverAbi,
   hawkNode,
+  labelhash,
   namehash,
   normalize,
 } from "hawk-names";
 import { ADDRESSES, CHAIN, EXPLORER } from "../config";
 import { fetchNamesByOwner, fetchFleet, type IndexedSubname } from "../indexer";
 import { useTx } from "../lib/useTx";
+import { HAWK_BOND, USDC_ADDRESS, HAWK_TOKEN, bondAbi, erc20MinAbi } from "../lib/bond";
 import { BandChip } from "../components/BandChip";
 import { shortAddress } from "../lib/format";
 
@@ -142,7 +144,10 @@ export function Fleet() {
             ))}
           </div>
           {parentLabel && (
-            <FleetForParent key={parentLabel} parentLabel={parentLabel} operator={address as Address} />
+            <>
+              <BondCard key={`bond-${parentLabel}`} parentLabel={parentLabel} />
+              <FleetForParent key={parentLabel} parentLabel={parentLabel} operator={address as Address} />
+            </>
           )}
         </>
       )}
@@ -676,4 +681,201 @@ function BulkCard({
       {error && <p className="notice danger small" style={{ marginTop: 10 }}>{error}</p>}
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Operator bond: skin in the game behind the fleet. USDC or $HAWK locked
+ *  behind the name — shown in the directory and verify API — exits only
+ *  through a public 7-day window. */
+function BondCard({ parentLabel }: { parentLabel: string }) {
+  const { run, busy, error, walletClient, publicClient } = useTx();
+  const { address } = useAccount();
+  const lh = BigInt(labelhashOf(parentLabel));
+  const node = hawkNode(parentLabel);
+  const [amount, setAmount] = useState("");
+  const [asset, setAsset] = useState<"USDC" | "HAWK">("USDC");
+  const [state, setState] = useState<{
+    asset: string;
+    amount: bigint;
+    usd: bigint;
+    pending: bigint;
+    unlockAt: bigint;
+  } | null>(null);
+
+  async function refresh() {
+    if (!publicClient) return;
+    const [a, amt, usd, , pending, unlockAt] = await publicClient.readContract({
+      address: HAWK_BOND,
+      abi: bondAbi,
+      functionName: "bondOf",
+      args: [node],
+    });
+    setState({ asset: a, amount: amt, usd, pending, unlockAt: BigInt(unlockAt) });
+  }
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parentLabel, publicClient]);
+
+  const usdDisplay = state && state.usd > 0n ? `$${(Number(state.usd) / 1e18).toFixed(2)}` : null;
+  const hasBond = state && (state.amount > 0n || state.pending > 0n);
+  const unlockReady =
+    state != null && state.pending > 0n && Number(state.unlockAt) * 1000 <= Date.now();
+
+  async function bondNow() {
+    if (!walletClient || !publicClient || !address) return;
+    const token = asset === "USDC" ? USDC_ADDRESS : HAWK_TOKEN;
+    const decimals = asset === "USDC" ? 6 : 18;
+    const units = BigInt(Math.round(Number(amount) * 10 ** 6)) * (asset === "USDC" ? 1n : 10n ** 12n);
+    if (units <= 0n) return;
+    const allowance = await publicClient.readContract({
+      address: token,
+      abi: erc20MinAbi,
+      functionName: "allowance",
+      args: [address, HAWK_BOND],
+    });
+    await run(
+      "bond",
+      [
+        async () =>
+          allowance >= units
+            ? null
+            : walletClient.writeContract({
+                address: token,
+                abi: erc20MinAbi,
+                functionName: "approve",
+                args: [HAWK_BOND, units],
+                chain: CHAIN,
+                account: address,
+              }),
+        async () =>
+          walletClient.writeContract({
+            address: HAWK_BOND,
+            abi: bondAbi,
+            functionName: asset === "USDC" ? "bondUSDC" : "bondHAWK",
+            args: [lh, units],
+            chain: CHAIN,
+            account: address,
+          }),
+      ],
+      () => {
+        setAmount("");
+        refresh();
+      },
+    );
+  }
+
+  async function requestExit() {
+    if (!walletClient || !address || !state || state.amount === 0n) return;
+    await run(
+      "exit",
+      [
+        async () =>
+          walletClient.writeContract({
+            address: HAWK_BOND,
+            abi: bondAbi,
+            functionName: "requestWithdraw",
+            args: [lh, state.amount],
+            chain: CHAIN,
+            account: address,
+          }),
+      ],
+      refresh,
+    );
+  }
+
+  async function claim() {
+    if (!walletClient || !address) return;
+    await run(
+      "claim",
+      [
+        async () =>
+          walletClient.writeContract({
+            address: HAWK_BOND,
+            abi: bondAbi,
+            functionName: "claimWithdraw",
+            args: [lh],
+            chain: CHAIN,
+            account: address,
+          }),
+      ],
+      refresh,
+    );
+  }
+
+  return (
+    <div className="card" style={{ marginBottom: 18 }}>
+      <h3 style={{ margin: "0 0 4px" }}>
+        Operator bond{usdDisplay ? ` — ${usdDisplay}` : ""}
+      </h3>
+      <p className="small muted" style={{ margin: "0 0 10px" }}>
+        Locked value behind this fleet, shown in the directory and verify
+        API. Exits run through a public 7-day window. 2% fee on USDC (half
+        buys and burns $HAWK), 1% on $HAWK (burned directly).
+      </p>
+
+      {hasBond && state && (
+        <p className="small mono" style={{ margin: "0 0 10px" }}>
+          bonded: {state.amount > 0n ? formatUnits6or18(state.amount, state.asset) : "0"}
+          {state.pending > 0n &&
+            ` · exiting: ${formatUnits6or18(state.pending, state.asset)} (${
+              unlockReady ? "claimable now" : `unlocks ${new Date(Number(state.unlockAt) * 1000).toLocaleDateString()}`
+            })`}
+        </p>
+      )}
+
+      <div className="row wrap" style={{ gap: 8 }}>
+        <input
+          className="input mono"
+          style={{ maxWidth: 160 }}
+          inputMode="decimal"
+          placeholder={asset === "USDC" ? "100" : "10000000"}
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <button
+          type="button"
+          className={`chip${asset === "USDC" ? " on" : ""}`}
+          onClick={() => setAsset("USDC")}
+        >
+          USDC
+        </button>
+        <button
+          type="button"
+          className={`chip${asset === "HAWK" ? " on" : ""}`}
+          onClick={() => setAsset("HAWK")}
+        >
+          HAWK
+        </button>
+        <button className="btn small" disabled={busy !== null || !amount} onClick={bondNow}>
+          {busy ? <span className="progress-ring" /> : null} bond
+        </button>
+        {hasBond && state && state.amount > 0n && (
+          <button className="btn small secondary" disabled={busy !== null} onClick={requestExit}>
+            request exit
+          </button>
+        )}
+        {unlockReady && (
+          <button className="btn small" disabled={busy !== null} onClick={claim}>
+            claim
+          </button>
+        )}
+      </div>
+      {error && <p className="notice danger small" style={{ marginTop: 10 }}>{error}</p>}
+    </div>
+  );
+}
+
+function formatUnits6or18(amount: bigint, asset: string): string {
+  const usdcLower = USDC_ADDRESS.toLowerCase();
+  if (asset.toLowerCase() === usdcLower) {
+    return `${(Number(amount) / 1e6).toFixed(2)} USDC`;
+  }
+  const n = Number(amount) / 1e18;
+  return `${n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n.toFixed(0)} $HAWK`;
+}
+
+function labelhashOf(label: string): `0x${string}` {
+  return labelhash(normalize(label));
 }
